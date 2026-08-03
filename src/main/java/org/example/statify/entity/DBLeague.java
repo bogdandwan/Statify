@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -23,4 +25,10 @@ public class DBLeague {
 
     @Column(name = "logo",   nullable = false)
     private String logo;
+
+    @ManyToOne
+    private DBCountry country;
+
+    @OneToMany(mappedBy = "leagues")
+    private List<DBSeasons> seasons;
 }

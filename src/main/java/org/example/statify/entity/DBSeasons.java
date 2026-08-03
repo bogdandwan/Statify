@@ -28,4 +28,7 @@ public class DBSeasons {
     @Column(name = "current", nullable = false)
     private Boolean current;
 
+    @ManyToOne
+    private DBLeague league;
+
 }

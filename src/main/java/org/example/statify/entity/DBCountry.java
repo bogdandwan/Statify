@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -22,4 +24,7 @@ public class DBCountry {
 
     @Column(name = "flag")
     private String flag;
+
+    @OneToMany(mappedBy = "countries")
+    private List<DBLeague> leagues;
 }

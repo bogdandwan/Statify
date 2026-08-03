@@ -13,5 +13,5 @@ public class LeagueResponseDto {
 
     private CountryDto country;
 
-    private List<SeasonDto> seasons;
+    private List<SeasonsDto> seasons;
 }

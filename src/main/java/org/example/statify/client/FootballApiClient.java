@@ -15,6 +15,9 @@ public class FootballApiClient {
 
         this.webClient = builder
                 .baseUrl("https://v3.football.api-sports.io")
+                .codecs(configurer ->
+                        configurer.defaultCodecs()
+                                .maxInMemorySize(1024 * 1024 * 10)) // 10 MB
                 .defaultHeader("x-apisports-key", "eb1df6a10c02c5e8cf95c849183a63a5")
                 .build();
     }

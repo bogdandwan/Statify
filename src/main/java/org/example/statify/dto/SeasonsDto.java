@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class SeasonDto {
+public class SeasonsDto {
 
     private Integer year;
 
