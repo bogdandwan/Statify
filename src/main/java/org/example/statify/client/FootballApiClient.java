@@ -15,7 +15,7 @@ public class FootballApiClient {
 
         this.webClient = builder
                 .baseUrl("https://v3.football.api-sports.io")
-                .defaultHeader("x-apisports-key", "TVOJ_API_KEY")
+                .defaultHeader("x-apisports-key", "eb1df6a10c02c5e8cf95c849183a63a5")
                 .build();
     }
 
