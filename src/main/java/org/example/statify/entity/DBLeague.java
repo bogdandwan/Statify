@@ -18,9 +18,8 @@ public class DBLeague {
     @Column(name = "name",  nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "type",  nullable = false)
-    private Type type;
+    private String type;
 
     @Column(name = "logo",   nullable = false)
     private String logo;
