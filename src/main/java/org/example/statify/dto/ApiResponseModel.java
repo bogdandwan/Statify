@@ -7,17 +7,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ApiResponseDto<T> {
+public class ApiResponseModel<T> {
 
     private String get;
-
     private Object parameters;
-
     private Object errors;
-
     private Integer results;
-
-    private PagingDto paging;
-
     private List<T> response;
 }

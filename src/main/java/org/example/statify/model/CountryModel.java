@@ -10,5 +10,4 @@ public class CountryModel {
     private String name;
     private String code;
     private String flag;
-
 }

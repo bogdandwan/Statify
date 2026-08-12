@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Table(name = "seasons")
-public class DBSeasons {
+public class DBSeason {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +29,10 @@ public class DBSeasons {
     private Boolean current;
 
     @ManyToOne
+    @JoinColumn(name = "league_id")
     private DBLeague league;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "coverage_id")
+    private DBCoverage coverage;
 }

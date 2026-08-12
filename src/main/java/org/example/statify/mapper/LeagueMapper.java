@@ -1,53 +1,42 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.LeagueResponseDto;
+import lombok.RequiredArgsConstructor;
+import org.example.statify.dto.LeagueResponseModel;
 import org.example.statify.entity.DBLeague;
 import org.example.statify.model.LeagueModel;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class LeagueMapper {
 
     private final CountryMapper countryMapper;
-    private final SeasonsMapper seasonMapper;
+    private final SeasonMapper seasonMapper;
 
 
-    public LeagueMapper(
-            CountryMapper countryMapper,
-            SeasonsMapper seasonMapper
-    ) {
-        this.countryMapper = countryMapper;
-        this.seasonMapper = seasonMapper;
-    }
-
-
-    public LeagueModel toModel(LeagueResponseDto dto) {
+    public LeagueModel toModel(LeagueResponseModel response) {
 
         LeagueModel model = new LeagueModel();
 
-        model.setId(dto.getLeague().getId());
-        model.setName(dto.getLeague().getName());
-        model.setType(dto.getLeague().getType());
-        model.setLogo(dto.getLeague().getLogo());
+        model.setId(response.getLeague().getId());
+        model.setName(response.getLeague().getName());
+        model.setType(response.getLeague().getType());
+        model.setLogo(response.getLeague().getLogo());
 
 
-        if (dto.getCountry() != null) {
-            model.setCountry(
-                    countryMapper.toModel(dto.getCountry())
-            );
+        if (response.getCountry() != null) {
+            model.setCountry(response.getCountry());
         }
 
-
-        if (dto.getSeasons() != null) {
+        if (response.getSeasons() != null) {
 
             model.setSeasons(
-                    dto.getSeasons()
+                    response.getSeasons()
                             .stream()
                             .map(seasonMapper::toModel)
                             .toList()
             );
         }
-
 
         return model;
     }
@@ -57,34 +46,10 @@ public class LeagueMapper {
 
         DBLeague entity = new DBLeague();
 
-
-        entity.setId(model.getId());
-
+        entity.setApiId(model.getId());
         entity.setName(model.getName());
-
         entity.setType(model.getType());
-
         entity.setLogo(model.getLogo());
-
-
-        if(model.getCountry() != null) {
-
-            entity.setCountry(
-                    countryMapper.toEntity(model.getCountry())
-            );
-        }
-
-
-        if(model.getSeasons() != null) {
-
-            entity.setSeasons(
-                    model.getSeasons()
-                            .stream()
-                            .map(seasonMapper::toEntity)
-                            .toList()
-            );
-        }
-
 
         return entity;
     }

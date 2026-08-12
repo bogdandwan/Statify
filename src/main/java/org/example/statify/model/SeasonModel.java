@@ -1,4 +1,4 @@
-package org.example.statify.dto;
+package org.example.statify.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,13 +7,12 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class SeasonsDto {
+public class SeasonModel {
 
     private Integer year;
-
     private LocalDate start;
-
     private LocalDate end;
-
     private Boolean current;
+
+    private CoverageModel coverage;
 }

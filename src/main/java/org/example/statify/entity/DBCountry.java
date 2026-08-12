@@ -16,15 +16,18 @@ public class DBCountry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "api_id", unique = true)
+    private Long apiId;
+
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "code")
+    @Column(name = "code", unique = true)
     private String code;
 
     @Column(name = "flag")
     private String flag;
 
-    @OneToMany(mappedBy = "countries")
+    @OneToMany(mappedBy = "country")
     private List<DBLeague> leagues;
 }

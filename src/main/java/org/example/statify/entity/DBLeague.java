@@ -17,6 +17,9 @@ public class DBLeague {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "api_id", unique = true)
+    private Long apiId;
+
     @Column(name = "name",  nullable = false)
     private String name;
 
@@ -29,6 +32,6 @@ public class DBLeague {
     @ManyToOne
     private DBCountry country;
 
-    @OneToMany(mappedBy = "leagues")
-    private List<DBSeasons> seasons;
+    @OneToMany(mappedBy = "league")
+    private List<DBSeason> seasons;
 }

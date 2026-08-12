@@ -10,14 +10,9 @@ import java.util.List;
 public class LeagueModel {
 
     private Long id;
-
     private String name;
-
     private String type;
-
     private String logo;
-
     private CountryModel country;
-
-    private List<SeasonsModel> seasons;
+    private List<SeasonModel> seasons;
 }
