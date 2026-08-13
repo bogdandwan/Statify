@@ -16,7 +16,8 @@ public class FootballApiClient {
     private final String apiKey;
 
 
-    public FootballApiClient(WebClient.Builder builder, @Value("${football.api.key}") String apiKey) {
+    public FootballApiClient(WebClient.Builder builder,
+                             @Value("${football.api.key}") String apiKey) {
         this.apiKey = apiKey;
         this.webClient = builder
                 .baseUrl("https://v3.football.api-sports.io")

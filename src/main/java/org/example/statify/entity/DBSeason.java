@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+
 import java.time.LocalDate;
 
 @Entity
@@ -28,11 +29,11 @@ public class DBSeason {
     @Column(name = "current", nullable = false)
     private Boolean current;
 
-    @ManyToOne
-    @JoinColumn(name = "league_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_id", nullable = false)
     private DBLeague league;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "coverage_id")
     private DBCoverage coverage;
 }

@@ -52,11 +52,8 @@ public class SeasonMapper {
         entity.setCurrent(model.getCurrent());
 
         if (model.getCoverage() != null) {
-            entity.setCoverage(
-                    coverageMapper.toEntity(model.getCoverage())
-            );
+            entity.setCoverage(coverageMapper.toEntity(model.getCoverage()));
         }
-
         return entity;
     }
 }

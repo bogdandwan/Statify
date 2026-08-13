@@ -31,30 +31,25 @@ public class LeagueServiceImpl implements LeagueService {
     @Transactional
     public void importLeagues() {
 
-
         ApiResponseModel<LeagueResponseModel> response =
                 footballApiClient.getLeagues();
 
-
         for (LeagueResponseModel responseModel : response.getResponse()) {
 
-            CountryModel countryModel = responseModel.getCountry();
+            LeagueModel leagueModel = leagueMapper.toModel(responseModel);
+            DBLeague league = leagueMapper.toEntity(leagueModel);
 
-            DBCountry country =
-                    countryRepository.findByName(countryModel.getName())
-                            .orElseGet(() ->
-                                    countryRepository.save(
-                                            countryMapper.toEntity(countryModel)
-                                    )
-                            );
+            if (responseModel.getCountry() != null) {
 
-            LeagueModel leagueModel =
-                    leagueMapper.toModel(responseModel);
+                String countryName = responseModel.getCountry().getName();
 
-            DBLeague league =
-                    leagueMapper.toEntity(leagueModel);
+                DBCountry country =
+                        countryRepository.findByName(countryName)
+                                .orElseThrow(() ->
+                                        new IllegalStateException("Country not found: " + countryName));
+                league.setCountry(country);
+            }
 
-            league.setCountry(country);
             leagueRepository.save(league);
         }
     }

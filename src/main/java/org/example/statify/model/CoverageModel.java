@@ -15,6 +15,6 @@ public class CoverageModel {
     private Boolean injuries;
     private Boolean predictions;
     private Boolean odds;
-    private FixtureModel fixtures;
+    private FixtureModel fixture;
 
 }

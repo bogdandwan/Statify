@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,9 +30,10 @@ public class DBLeague {
     @Column(name = "logo",   nullable = false)
     private String logo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
     private DBCountry country;
 
-    @OneToMany(mappedBy = "league")
-    private List<DBSeason> seasons;
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DBSeason> seasons = new ArrayList<>();
 }

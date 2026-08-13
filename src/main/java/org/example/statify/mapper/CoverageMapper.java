@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.statify.dto.CoverageResponseModel;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.DBCoverage;
+import org.example.statify.entity.DBFixture;
 import org.example.statify.model.CoverageModel;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,7 @@ public class CoverageMapper {
         model.setOdds(response.getOdds());
 
         if (response.getFixtures() != null) {
-            model.setFixtures(fixtureMapper.toModel(response.getFixtures()));
+            model.setFixture(fixtureMapper.toModel(response.getFixtures()));
         }
 
         return model;
@@ -45,10 +46,11 @@ public class CoverageMapper {
         entity.setPredictions(model.getPredictions());
         entity.setOdds(model.getOdds());
 
-        if (model.getFixtures() != null) {
-            entity.setFixture(
-                    fixtureMapper.toEntity(model.getFixtures())
-            );
+        if (model.getFixture() != null) {
+            DBFixture fixture = fixtureMapper.toEntity(model.getFixture());
+
+            entity.setFixture(fixture);
+            fixture.setCoverage(entity);
         }
 
         return entity;

@@ -3,14 +3,15 @@ package org.example.statify.mapper;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.dto.LeagueResponseModel;
 import org.example.statify.entity.DBLeague;
+import org.example.statify.entity.DBSeason;
 import org.example.statify.model.LeagueModel;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class LeagueMapper {
-
-    private final CountryMapper countryMapper;
     private final SeasonMapper seasonMapper;
 
 
@@ -23,13 +24,11 @@ public class LeagueMapper {
         model.setType(response.getLeague().getType());
         model.setLogo(response.getLeague().getLogo());
 
-
         if (response.getCountry() != null) {
             model.setCountry(response.getCountry());
         }
 
         if (response.getSeasons() != null) {
-
             model.setSeasons(
                     response.getSeasons()
                             .stream()
@@ -37,6 +36,14 @@ public class LeagueMapper {
                             .toList()
             );
         }
+
+        System.out.println(
+                "League: " + model.getName()
+                        + " | Seasons: "
+                        + (model.getSeasons() == null
+                        ? "NULL"
+                        : model.getSeasons().size())
+        );
 
         return model;
     }
@@ -50,6 +57,19 @@ public class LeagueMapper {
         entity.setName(model.getName());
         entity.setType(model.getType());
         entity.setLogo(model.getLogo());
+
+        if (model.getSeasons() != null) {
+
+            List<DBSeason> seasons =
+                    model.getSeasons()
+                            .stream()
+                            .map(seasonMapper::toEntity)
+                            .toList();
+
+            seasons.forEach(season -> season.setLeague(entity));
+
+            entity.setSeasons(seasons);
+        }
 
         return entity;
     }

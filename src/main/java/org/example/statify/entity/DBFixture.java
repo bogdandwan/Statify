@@ -26,4 +26,8 @@ public class DBFixture {
 
     @Column(name = "statisticsPlayers",  nullable = false)
     private Boolean statisticsPlayers;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coverage_id", nullable = false, unique = true)
+    private DBCoverage coverage;
 }
