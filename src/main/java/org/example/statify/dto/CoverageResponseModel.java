@@ -2,12 +2,13 @@ package org.example.statify.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.statify.dto.fixtures.FixtureResponseModel;
 
 @Getter
 @Setter
 public class CoverageResponseModel {
 
-    private FixturesResponseModel fixtures;
+    private FixtureResponseModel fixtures;
     private Boolean standings;
     private Boolean players;
     private Boolean top_scorers;

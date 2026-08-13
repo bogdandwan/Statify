@@ -6,6 +6,8 @@ import lombok.Setter;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +35,9 @@ public class DBSeason {
     @JoinColumn(name = "league_id", nullable = false)
     private DBLeague league;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "coverage_id")
+    @OneToOne(mappedBy = "season", cascade = CascadeType.ALL)
     private DBCoverage coverage;
+
+    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DBFixture> fixtures = new ArrayList<>();
 }

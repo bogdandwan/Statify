@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CoverageMapper {
 
-    private final FixtureMapper fixtureMapper;
 
     public CoverageModel toModel(CoverageResponseModel response) {
 
@@ -27,9 +26,6 @@ public class CoverageMapper {
         model.setPredictions(response.getPredictions());
         model.setOdds(response.getOdds());
 
-        if (response.getFixtures() != null) {
-            model.setFixture(fixtureMapper.toModel(response.getFixtures()));
-        }
 
         return model;
     }
@@ -45,13 +41,6 @@ public class CoverageMapper {
         entity.setInjuries(model.getInjuries());
         entity.setPredictions(model.getPredictions());
         entity.setOdds(model.getOdds());
-
-        if (model.getFixture() != null) {
-            DBFixture fixture = fixtureMapper.toEntity(model.getFixture());
-
-            entity.setFixture(fixture);
-            fixture.setCoverage(entity);
-        }
 
         return entity;
     }

@@ -38,7 +38,7 @@ public class DBCoverage {
     @Column(name = "odds",  nullable = false)
     private Boolean odds;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fixtures_id")
-    private DBFixture fixture;
+    @OneToOne
+    @JoinColumn(name = "season_id",  nullable = false, unique = true)
+    private DBSeason season;
 }

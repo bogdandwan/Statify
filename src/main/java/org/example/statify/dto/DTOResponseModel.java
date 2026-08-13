@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ApiResponseModel<T> {
+public class DTOResponseModel<T> {
 
     private String get;
     private Object parameters;

@@ -3,7 +3,7 @@ package org.example.statify.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.client.FootballApiClient;
-import org.example.statify.dto.ApiResponseModel;
+import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.mapper.CountryMapper;
 import org.example.statify.model.CountryModel;
@@ -24,7 +24,7 @@ public class CountryServiceImpl implements CountryService {
     @Transactional
     public void importCountries() {
 
-        ApiResponseModel<CountryModel> response = client.getCountries();
+        DTOResponseModel<CountryModel> response = client.getCountries();
 
         List<DBCountry> countries =
                 response.getResponse()

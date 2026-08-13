@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class CountryModel {
 
+    private Long id;
     private String name;
     private String code;
     private String flag;

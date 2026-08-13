@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,9 +17,6 @@ public class DBCountry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "api_id", unique = true)
-    private Long apiId;
-
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -29,5 +27,5 @@ public class DBCountry {
     private String flag;
 
     @OneToMany(mappedBy = "country")
-    private List<DBLeague> leagues;
+    private List<DBLeague> leagues = new ArrayList<>();
 }

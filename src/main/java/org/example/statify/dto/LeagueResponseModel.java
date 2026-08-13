@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.statify.model.CountryModel;
 import org.example.statify.model.LeagueModel;
-import org.example.statify.model.SeasonModel;
 
 import java.util.List;
 
