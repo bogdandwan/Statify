@@ -1,0 +1,43 @@
+package org.example.statify.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.example.statify.service.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class CodebookController {
+
+    private final CountryService  countryService;
+    private final FixtureService fixtureService;
+    private final LeagueService leagueService;
+    private final TeamService teamService;
+    private final VenueService venueService;
+
+    @PostMapping("/country")
+    public void importCountries() {
+        countryService.importCountries();
+    }
+
+    @PostMapping("/fixtures")
+    public void importFixtures(Long leagueId, Integer seasonYear) {
+        fixtureService.importFixtures(leagueId, seasonYear);
+    }
+
+    @PostMapping("/leagues")
+    public void importLeagues() {
+        leagueService.importLeagues();
+    }
+
+    @PostMapping("/teams")
+    public void importTeams(String country) {
+        teamService.importTeams(country);
+    }
+
+    @PostMapping("/venues")
+    public void importVenue(String country) {
+        venueService.importVenues(country);
+    }
+
+}

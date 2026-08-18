@@ -9,4 +9,6 @@ public interface FixtureRepository extends JpaRepository<DBFixture, Long> {
 
     Optional<DBFixture> findByApiId(Long apiId);
 
+    boolean existsByApiId(Long apiId);
+
 }

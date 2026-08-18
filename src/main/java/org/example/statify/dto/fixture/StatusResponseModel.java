@@ -1,4 +1,4 @@
-package org.example.statify.dto.fixtures;
+package org.example.statify.dto.fixture;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -6,13 +6,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FixtureStatusModel {
+public class StatusResponseModel {
 
     @JsonProperty("long")
-    private String longStatus;
+    private String longName;
 
     @JsonProperty("short")
-    private String shortStatus;
+    private String shortName;
 
     private Integer elapsed;
     private Integer extra;

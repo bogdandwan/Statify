@@ -9,4 +9,6 @@ public interface TeamRepository extends JpaRepository<DBTeam, Long> {
 
     Optional<DBTeam> findByApiId(Long apiId);
 
+    boolean existsByApiId(Long apiId);
+
 }

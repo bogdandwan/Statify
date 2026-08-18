@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "venues")
 @Getter
 @Setter
+@Table(name = "venues")
 public class DBVenue {
 
     @Id
@@ -30,6 +30,9 @@ public class DBVenue {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "country")
+    private String country;
+
     @Column(name = "capacity")
     private Integer capacity;
 
@@ -38,7 +41,4 @@ public class DBVenue {
 
     @Column(name = "image")
     private String image;
-
-    @OneToMany(mappedBy = "venue")
-    private List<DBFixture> fixtures = new ArrayList<>();
 }

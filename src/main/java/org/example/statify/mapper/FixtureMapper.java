@@ -1,9 +1,12 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.fixtures.FixtureResponseModel;
-import org.example.statify.entity.DBFixture;
+
+import org.example.statify.dto.fixture.FixtureResponseModel;
+import org.example.statify.entity.*;
 import org.example.statify.model.FixtureModel;
 import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
 
 @Component
 public class FixtureMapper {
@@ -12,134 +15,48 @@ public class FixtureMapper {
 
         FixtureModel model = new FixtureModel();
 
-        model.setApiId(response.getFixture().getId());
+        model.setId(response.getFixture().getId());
         model.setReferee(response.getFixture().getReferee());
-        model.setDate(response.getFixture().getDate());
-
-        if (response.getFixture().getStatus() != null) {
-
-            model.setStatusLong(response.getFixture().getStatus().getLongStatus());
-            model.setStatusShort(response.getFixture().getStatus().getShortStatus());
-            model.setElapsed(response.getFixture().getStatus().getElapsed());
-            model.setExtra(response.getFixture().getStatus().getExtra());
-        }
-
-        if (response.getLeague() != null) {
-
-            model.setLeagueId(response.getLeague().getId());
-            model.setSeason(response.getLeague().getSeason());
-        }
-
-        if (response.getTeams() != null) {
-
-            if (response.getTeams().getHome() != null) {
-                model.setHomeTeamId(response.getTeams().getHome().getId());
-            }
-            if (response.getTeams().getAway() != null) {
-                model.setAwayTeamId(response.getTeams().getAway().getId()
-                );
-            }
-        }
-
-        if (response.getGoals() != null) {
-
-            model.setHomeGoals(response.getGoals().getHome());
-            model.setAwayGoals(response.getGoals().getAway());
-        }
-
-        if (response.getScore() != null) {
-
-            if (response.getScore().getHalftime() != null) {
-
-                model.setHalftimeHome(
-                        response.getScore()
-                                .getHalftime()
-                                .getHome()
-                );
-
-                model.setHalftimeAway(
-                        response.getScore()
-                                .getHalftime()
-                                .getAway()
-                );
-            }
-
-            if (response.getScore().getFulltime() != null) {
-
-                model.setFulltimeHome(
-                        response.getScore()
-                                .getFulltime()
-                                .getHome()
-                );
-
-                model.setFulltimeAway(
-                        response.getScore()
-                                .getFulltime()
-                                .getAway()
-                );
-            }
-
-            if (response.getScore().getExtratime() != null) {
-
-                model.setExtratimeHome(
-                        response.getScore()
-                                .getExtratime()
-                                .getHome()
-                );
-
-                model.setExtratimeAway(
-                        response.getScore()
-                                .getExtratime()
-                                .getAway()
-                );
-            }
-
-            if (response.getScore().getPenalty() != null) {
-
-                model.setPenaltyHome(
-                        response.getScore()
-                                .getPenalty()
-                                .getHome()
-                );
-
-                model.setPenaltyAway(
-                        response.getScore()
-                                .getPenalty()
-                                .getAway()
-                );
-            }
-        }
+        model.setTimezone(response.getFixture().getTimezone());
+        model.setDate(OffsetDateTime.parse(response.getFixture().getDate()));
+        model.setTimestamp(response.getFixture().getTimestamp());
+        model.setFirstPeriod(response.getFixture().getPeriods().getFirst());
+        model.setSecondPeriod(response.getFixture().getPeriods().getSecond());
+        model.setStatusLong(response.getFixture().getStatus().getLongName());
+        model.setStatusShort(response.getFixture().getStatus().getShortName());
+        model.setElapsed(response.getFixture().getStatus().getElapsed());
+        model.setExtra(response.getFixture().getStatus().getExtra());
+        model.setLeagueId(response.getLeague().getId());
+        model.setSeasonYear(response.getLeague().getSeason());
+        model.setHomeTeamId(response.getTeams().getHome().getId());
+        model.setAwayTeamId(response.getTeams().getAway().getId());
+        model.setVenueId(response.getFixture().getVenue().getId());
+        model.setScore(response.getScore());
 
         return model;
     }
 
-    public DBFixture toEntity(FixtureModel model) {
+    public DBFixture toEntity(FixtureModel model, DBLeague league, DBSeason season, DBTeam homeTeam, DBTeam awayTeam, DBVenue venue) {
 
         DBFixture entity = new DBFixture();
 
-        entity.setApiId(model.getApiId());
+        entity.setApiId(model.getId());
         entity.setReferee(model.getReferee());
+        entity.setTimezone(model.getTimezone());
         entity.setDate(model.getDate());
-
+        entity.setTimestamp(model.getTimestamp());
+        entity.setFirstPeriod(model.getFirstPeriod());
+        entity.setSecondPeriod(model.getSecondPeriod());
         entity.setStatusLong(model.getStatusLong());
         entity.setStatusShort(model.getStatusShort());
         entity.setElapsed(model.getElapsed());
         entity.setExtra(model.getExtra());
 
-        entity.setHomeGoals(model.getHomeGoals());
-        entity.setAwayGoals(model.getAwayGoals());
-
-        entity.setHalftimeHome(model.getHalftimeHome());
-        entity.setHalftimeAway(model.getHalftimeAway());
-
-        entity.setFulltimeHome(model.getFulltimeHome());
-        entity.setFulltimeAway(model.getFulltimeAway());
-
-        entity.setExtratimeHome(model.getExtratimeHome());
-        entity.setExtratimeAway(model.getExtratimeAway());
-
-        entity.setPenaltyHome(model.getPenaltyHome());
-        entity.setPenaltyAway(model.getPenaltyAway());
+        entity.setLeague(league);
+        entity.setSeason(season);
+        entity.setHomeTeam(homeTeam);
+        entity.setAwayTeam(awayTeam);
+        entity.setVenue(venue);
 
         return entity;
     }

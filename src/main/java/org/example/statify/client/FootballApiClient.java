@@ -2,9 +2,12 @@ package org.example.statify.client;
 
 import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.dto.LeagueResponseModel;
-import org.example.statify.dto.fixtures.FixtureResponseModel;
+import org.example.statify.dto.fixture.FixtureResponseModel;
+import org.example.statify.dto.team.TeamApiResponseModel;
+import org.example.statify.dto.team.TeamResponseModel;
+import org.example.statify.dto.VenueResponseModel;
+import org.example.statify.dto.fixture.FixtureResponseModel;
 import org.example.statify.model.CountryModel;
-import org.example.statify.model.FixtureModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -53,13 +56,15 @@ public class FootballApiClient {
                 )
                 .block();
     }
-    public DTOResponseModel<FixtureResponseModel> getFixtures(Long leagueId, Integer seasonYear) {
+    public DTOResponseModel<FixtureResponseModel> getFixtures(
+            Long leagueId,
+            Integer seasonYear) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/fixtures")
-                        .queryParam("league", leagueId)
-                        .queryParam("season", seasonYear)
+                        .queryParam("league", 39)
+                        .queryParam("season", 2024)
                         .build()
                 )
                 .retrieve()
@@ -71,4 +76,37 @@ public class FootballApiClient {
                 .block();
     }
 
+    public DTOResponseModel<TeamApiResponseModel> getTeamsByCountry(String country) {
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/teams")
+                        .queryParam("country", country)
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(
+                        new ParameterizedTypeReference<
+                                DTOResponseModel<TeamApiResponseModel>
+                                >() {}
+                )
+                .block();
+    }
+
+    public DTOResponseModel<VenueResponseModel> getVenuesByCountry(String country) {
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/venues")
+                        .queryParam("country", country)
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(
+                        new ParameterizedTypeReference<
+                                DTOResponseModel<VenueResponseModel>
+                                >() {}
+                )
+                .block();
+    }
 }

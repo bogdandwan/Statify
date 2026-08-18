@@ -2,6 +2,7 @@ package org.example.statify.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.statify.dto.score.ScoreResponseModel;
 
 import java.time.OffsetDateTime;
 
@@ -9,25 +10,21 @@ import java.time.OffsetDateTime;
 @Setter
 public class FixtureModel {
 
-    private Long apiId;
+    private Long id;
     private String referee;
+    private String timezone;
     private OffsetDateTime date;
+    private Long timestamp;
+    private Long firstPeriod;
+    private Long secondPeriod;
     private String statusLong;
     private String statusShort;
     private Integer elapsed;
     private Integer extra;
-    private Integer homeGoals;
-    private Integer awayGoals;
-    private Integer halftimeHome;
-    private Integer halftimeAway;
-    private Integer fulltimeHome;
-    private Integer fulltimeAway;
-    private Integer extratimeHome;
-    private Integer extratimeAway;
-    private Integer penaltyHome;
-    private Integer penaltyAway;
-    private Integer season;
     private Long leagueId;
+    private Integer seasonYear;
     private Long homeTeamId;
     private Long awayTeamId;
+    private Long venueId;
+    private ScoreResponseModel score;
 }

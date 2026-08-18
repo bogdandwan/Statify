@@ -2,6 +2,7 @@ package org.example.statify.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.example.statify.dto.SeasonResponseModel;
+import org.example.statify.entity.DBCoverage;
 import org.example.statify.entity.DBSeason;
 import org.example.statify.model.SeasonModel;
 import org.springframework.stereotype.Component;
@@ -21,15 +22,11 @@ public class SeasonMapper {
 
         model.setYear(response.getYear());
         if (response.getStart() != null) {
-            model.setStart(
-                    LocalDate.parse(response.getStart())
-            );
+            model.setStart(LocalDate.parse(response.getStart()));
         }
 
         if (response.getEnd() != null) {
-            model.setEnd(
-                    LocalDate.parse(response.getEnd())
-            );
+            model.setEnd(LocalDate.parse(response.getEnd()));
         }
         model.setCurrent(response.getCurrent());
 
@@ -39,7 +36,6 @@ public class SeasonMapper {
 
         return model;
     }
-
 
 
     public DBSeason toEntity(SeasonModel model) {
@@ -52,7 +48,11 @@ public class SeasonMapper {
         entity.setCurrent(model.getCurrent());
 
         if (model.getCoverage() != null) {
-            entity.setCoverage(coverageMapper.toEntity(model.getCoverage()));
+
+            DBCoverage coverage = coverageMapper.toEntity(model.getCoverage());
+
+            entity.setCoverage(coverage);
+            coverage.setSeason(entity);
         }
         return entity;
     }

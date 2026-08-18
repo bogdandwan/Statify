@@ -2,7 +2,7 @@ package org.example.statify.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.statify.dto.fixtures.FixtureResponseModel;
+import org.example.statify.dto.fixture.FixtureResponseModel;
 
 @Getter
 @Setter

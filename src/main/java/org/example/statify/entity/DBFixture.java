@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "fixtures")
@@ -17,70 +19,49 @@ public class DBFixture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "api_id", unique = true, nullable = false)
+    @Column(name = "api_id", nullable = false, unique = true)
     private Long apiId;
 
-    @Column(name = "referee")
     private String referee;
 
-    @Column(name = "date")
+    private String timezone;
+
     private OffsetDateTime date;
 
-    @Column(name = "status_long")
+    private Long timestamp;
+
+    private Long firstPeriod;
+
+    private Long secondPeriod;
+
     private String statusLong;
 
-    @Column(name = "status_short")
     private String statusShort;
 
-    @Column(name = "elapsed")
     private Integer elapsed;
 
-    @Column(name = "extra")
     private Integer extra;
 
-    @Column(name = "home_goals")
-    private Integer homeGoals;
-
-    @Column(name = "away_goals")
-    private Integer awayGoals;
-
-    @Column(name = "halftime_home")
-    private Integer halftimeHome;
-
-    @Column(name = "halftime_away")
-    private Integer halftimeAway;
-
-    @Column(name = "fulltime_home")
-    private Integer fulltimeHome;
-
-    @Column(name = "fulltime_away")
-    private Integer fulltimeAway;
-
-    @Column(name = "extratime_home")
-    private Integer extratimeHome;
-
-    @Column(name = "extratime_away")
-    private Integer extratimeAway;
-
-    @Column(name = "penalty_home")
-    private Integer penaltyHome;
-
-    @Column(name = "penalty_away")
-    private Integer penaltyAway;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_id")
+    private DBLeague league;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "season_id", nullable = false)
+    @JoinColumn(name = "season_id")
     private DBSeason season;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "home_team_id")
+    private DBTeam homeTeam;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "away_team_id")
+    private DBTeam awayTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id")
     private DBVenue venue;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "home_team_id", nullable = false)
-    private DBTeam homeTeam;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "away_team_id", nullable = false)
-    private DBTeam awayTeam;
+    @OneToMany(mappedBy = "fixture")
+    private List<DBScore> scores;
 }

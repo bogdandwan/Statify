@@ -2,6 +2,7 @@ package org.example.statify.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.statify.model.PagingModel;
 
 import java.util.List;
 
@@ -13,5 +14,6 @@ public class DTOResponseModel<T> {
     private Object parameters;
     private Object errors;
     private Integer results;
+    private PagingModel paging;
     private List<T> response;
 }

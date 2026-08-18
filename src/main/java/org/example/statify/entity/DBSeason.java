@@ -38,6 +38,6 @@ public class DBSeason {
     @OneToOne(mappedBy = "season", cascade = CascadeType.ALL)
     private DBCoverage coverage;
 
-    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DBFixture> fixtures = new ArrayList<>();
+    /*@OneToMany(mappedBy = "season")
+    private List<DBFixture> fixtures;*/
 }
