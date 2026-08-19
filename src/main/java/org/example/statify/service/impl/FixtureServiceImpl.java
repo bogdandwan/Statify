@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.statify.client.FootballApiClient;
 import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.dto.fixture.FixtureResponseModel;
+import org.example.statify.dto.score.ScoreDetailResponseModel;
 import org.example.statify.dto.score.ScoreResponseModel;
 import org.example.statify.entity.*;
 import org.example.statify.entity.enums.ScoreType;
+import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.mapper.FixtureMapper;
 import org.example.statify.mapper.ScoreMapper;
 import org.example.statify.model.FixtureModel;
@@ -40,7 +42,6 @@ public class FixtureServiceImpl implements FixtureService {
         DTOResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(leagueId, seasonYear);
 
         for (FixtureResponseModel responseModel : response.getResponse()) {
-
             FixtureModel fixtureModel = fixtureMapper.toModel(responseModel);
 
             if (fixtureRepository.existsByApiId(fixtureModel.getId())) {
@@ -49,45 +50,42 @@ public class FixtureServiceImpl implements FixtureService {
 
             DBLeague league = leagueRepository.findByApiId(fixtureModel.getLeagueId())
                             .orElseThrow(() ->
-                                    new RuntimeException("League not found: " + fixtureModel.getLeagueId()));
+                                    new NotFoundException("League not found: " + fixtureModel.getLeagueId()));
 
-            DBSeason season = seasonRepository.findByLeagueApiIdYear(fixtureModel.getLeagueId(), fixtureModel.getSeasonYear())
+            DBSeason season = seasonRepository.findByLeagueApiIdAndYear(fixtureModel.getLeagueId(), fixtureModel.getSeasonYear())
                     .orElseThrow(() ->
-                            new RuntimeException("Season not found: " + fixtureModel.getSeasonYear()));
+                            new NotFoundException("Season not found: " + fixtureModel.getSeasonYear()));
 
             DBTeam homeTeam = teamRepository.findByApiId(fixtureModel.getHomeTeamId())
                     .orElseThrow(() ->
-                            new RuntimeException("Home team not found: " + fixtureModel.getHomeTeamId()));
+                            new NotFoundException("Home team not found: " + fixtureModel.getHomeTeamId()));
 
             DBTeam awayTeam = teamRepository.findByApiId(fixtureModel.getAwayTeamId())
-                    .orElseThrow(() -> new RuntimeException("Away team not found: " + fixtureModel.getAwayTeamId()));
+                    .orElseThrow(() -> new NotFoundException("Away team not found: " + fixtureModel.getAwayTeamId()));
 
             DBVenue venue = venueRepository.findByApiId(fixtureModel.getVenueId())
-                    .orElseThrow(() -> new RuntimeException("Venue not found: " + fixtureModel.getVenueId()));
-
+                    .orElseThrow(() -> new NotFoundException("Venue not found: " + fixtureModel.getVenueId()));
 
             DBFixture fixture = fixtureMapper.toEntity(fixtureModel, league, season, homeTeam, awayTeam, venue);
-
             fixtureRepository.save(fixture);
-
             ScoreResponseModel score = fixtureModel.getScore();
 
             if (score != null) {
 
-                saveScore(scoreMapper.toModel(score.getHalftime(), ScoreType.HALFTIME), fixture);
-                saveScore(scoreMapper.toModel(score.getFulltime(), ScoreType.FULLTIME), fixture);
-                saveScore(scoreMapper.toModel(score.getExtratime(), ScoreType.EXTRATIME), fixture);
-                saveScore(scoreMapper.toModel(score.getPenalty(), ScoreType.PENALTY), fixture);
+                saveScore(score.getHalftime(), ScoreType.HALFTIME, fixture);
+                saveScore(score.getFulltime(), ScoreType.FULLTIME, fixture);
+                saveScore(score.getExtratime(), ScoreType.EXTRATIME, fixture);
+                saveScore(score.getPenalty(), ScoreType.PENALTY, fixture);
             }
         }
     }
 
-    private void saveScore(ScoreModel scoreModel, DBFixture fixture) {
+    private void saveScore(ScoreDetailResponseModel scoreDetail, ScoreType type, DBFixture fixture) {
 
-        if (scoreModel == null) {
+        if (scoreDetail.getHome() == null && scoreDetail.getAway() == null) {
             return;
         }
-
+        ScoreModel scoreModel = scoreMapper.toModel(scoreDetail, type);
         DBScore score = scoreMapper.toEntity(scoreModel, fixture);
         scoreRepository.save(score);
     }

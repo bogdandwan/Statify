@@ -7,6 +7,7 @@ import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.dto.LeagueResponseModel;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.DBLeague;
+import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.mapper.CountryMapper;
 import org.example.statify.mapper.LeagueMapper;
 import org.example.statify.model.LeagueModel;
@@ -44,7 +45,7 @@ public class LeagueServiceImpl implements LeagueService {
                 DBCountry country =
                         countryRepository.findByName(countryName)
                                 .orElseThrow(() ->
-                                        new IllegalStateException("Country not found: " + countryName));
+                                        new NotFoundException("Country not found: " + countryName));
                 league.setCountry(country);
             }
 
