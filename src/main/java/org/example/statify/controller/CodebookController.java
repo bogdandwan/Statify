@@ -3,6 +3,7 @@ package org.example.statify.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.service.*;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,6 +15,7 @@ public class CodebookController {
     private final LeagueService leagueService;
     private final TeamService teamService;
     private final VenueService venueService;
+    private final PlayerService playerService;
 
     @PostMapping("/country")
     public void importCountries() {
@@ -38,6 +40,11 @@ public class CodebookController {
     @PostMapping("/venues")
     public void importVenue(String country) {
         venueService.importVenues(country);
+    }
+
+    @PostMapping("/players")
+    public void importPlayers(@RequestParam Long leagueId, @RequestParam Integer season) {
+        playerService.importPlayer(leagueId, season);
     }
 
 }

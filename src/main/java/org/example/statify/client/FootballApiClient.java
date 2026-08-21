@@ -3,10 +3,9 @@ package org.example.statify.client;
 import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.dto.LeagueResponseModel;
 import org.example.statify.dto.fixture.FixtureResponseModel;
+import org.example.statify.dto.player.PlayerResponseModel;
 import org.example.statify.dto.team.TeamApiResponseModel;
-import org.example.statify.dto.team.TeamResponseModel;
 import org.example.statify.dto.VenueResponseModel;
-import org.example.statify.dto.fixture.FixtureResponseModel;
 import org.example.statify.model.CountryModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -105,6 +104,25 @@ public class FootballApiClient {
                 .bodyToMono(
                         new ParameterizedTypeReference<
                                 DTOResponseModel<VenueResponseModel>
+                                >() {}
+                )
+                .block();
+    }
+
+    public DTOResponseModel<PlayerResponseModel> getPlayers(Long leagueId, Integer seasonYear, Integer page) {
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/players")
+                        .queryParam("league", leagueId)
+                        .queryParam("season", seasonYear)
+                        .queryParam("page", page)
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(
+                        new ParameterizedTypeReference<
+                                DTOResponseModel<PlayerResponseModel>
                                 >() {}
                 )
                 .block();
