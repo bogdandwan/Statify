@@ -2,7 +2,7 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.statify.client.FootballApiClient;
+import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.dto.player.PlayerResponseModel;
 import org.example.statify.entity.DBPlayer;
@@ -18,7 +18,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     private final PlayerRepository playerRepository;
     private final PlayerMapper playerMapper;
-    private final FootballApiClient footballApiClient;
+    private final FootballApiClientImpl footballApiClient;
 
     @Transactional
     @Override

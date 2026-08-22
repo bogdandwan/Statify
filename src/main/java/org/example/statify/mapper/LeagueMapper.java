@@ -1,7 +1,7 @@
 package org.example.statify.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.example.statify.dto.LeagueResponseModel;
+import org.example.statify.dto.league.LeagueResponseModel;
 import org.example.statify.entity.DBLeague;
 import org.example.statify.entity.DBSeason;
 import org.example.statify.model.LeagueModel;
@@ -19,7 +19,7 @@ public class LeagueMapper {
 
         LeagueModel model = new LeagueModel();
 
-        model.setId(response.getLeague().getId());
+        model.setApiId(response.getLeague().getApiId());
         model.setName(response.getLeague().getName());
         model.setType(response.getLeague().getType());
         model.setLogo(response.getLeague().getLogo());
@@ -37,14 +37,6 @@ public class LeagueMapper {
             );
         }
 
-        System.out.println(
-                "League: " + model.getName()
-                        + " | Seasons: "
-                        + (model.getSeasons() == null
-                        ? "NULL"
-                        : model.getSeasons().size())
-        );
-
         return model;
     }
 
@@ -53,7 +45,7 @@ public class LeagueMapper {
 
         DBLeague entity = new DBLeague();
 
-        entity.setApiId(model.getId());
+        entity.setApiId(model.getApiId());
         entity.setName(model.getName());
         entity.setType(model.getType());
         entity.setLogo(model.getLogo());

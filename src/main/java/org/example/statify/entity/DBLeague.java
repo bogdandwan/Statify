@@ -19,7 +19,7 @@ public class DBLeague {
     private Long id;
 
     @Column(name = "api_id", unique = true)
-    private Long apiId;
+    private Integer apiId;
 
     @Column(name = "name",  nullable = false)
     private String name;

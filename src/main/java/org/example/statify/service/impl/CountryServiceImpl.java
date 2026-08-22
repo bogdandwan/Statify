@@ -2,7 +2,7 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.statify.client.FootballApiClient;
+import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.mapper.CountryMapper;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CountryServiceImpl implements CountryService {
 
-    private final FootballApiClient client;
+    private final FootballApiClientImpl client;
     private final CountryMapper countryMapper;
     private final CountryRepository countryRepository;
 

@@ -1,4 +1,4 @@
-package org.example.statify.dto;
+package org.example.statify.dto.coverage;
 
 import lombok.Getter;
 import lombok.Setter;

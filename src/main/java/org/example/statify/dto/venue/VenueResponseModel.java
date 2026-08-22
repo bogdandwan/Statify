@@ -1,4 +1,4 @@
-package org.example.statify.dto;
+package org.example.statify.dto.venue;
 
 import lombok.Getter;
 import lombok.Setter;

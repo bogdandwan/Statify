@@ -1,7 +1,7 @@
 package org.example.statify.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.example.statify.dto.SeasonResponseModel;
+import org.example.statify.dto.season.SeasonResponseModel;
 import org.example.statify.entity.DBCoverage;
 import org.example.statify.entity.DBSeason;
 import org.example.statify.model.SeasonModel;

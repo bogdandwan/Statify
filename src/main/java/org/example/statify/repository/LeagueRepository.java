@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface LeagueRepository extends JpaRepository<DBLeague, Integer> {
 
-    Optional<DBLeague> findByApiId(Long apiId);
+    DBLeague findByApiId(Integer apiId);
+
+    boolean existsByApiId(Integer apiId);
 
 }

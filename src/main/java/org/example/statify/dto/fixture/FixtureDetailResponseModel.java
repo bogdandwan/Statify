@@ -2,7 +2,7 @@ package org.example.statify.dto.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.statify.dto.VenueResponseModel;
+import org.example.statify.dto.venue.VenueResponseModel;
 
 @Getter
 @Setter

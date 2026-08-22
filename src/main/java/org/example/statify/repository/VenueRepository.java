@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface VenueRepository extends JpaRepository<DBVenue, Long> {
 
-    Optional<DBVenue> findByApiId(Long apiId);
+    DBVenue findByApiId(Integer apiId);
 
-    boolean existsByApiId(Long apiId);
+    boolean existsByApiId(Integer apiId);
 
 }

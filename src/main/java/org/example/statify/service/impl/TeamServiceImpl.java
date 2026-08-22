@@ -2,10 +2,9 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.statify.client.FootballApiClient;
+import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.dto.DTOResponseModel;
 import org.example.statify.dto.team.TeamApiResponseModel;
-import org.example.statify.dto.team.TeamResponseModel;
 import org.example.statify.entity.DBTeam;
 import org.example.statify.mapper.TeamMapper;
 import org.example.statify.model.TeamModel;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TeamServiceImpl implements TeamService {
 
-    private final FootballApiClient footballApiClient;
+    private final FootballApiClientImpl footballApiClient;
     private final TeamMapper teamMapper;
     private final TeamRepository teamRepository;
 

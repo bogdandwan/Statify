@@ -4,6 +4,8 @@ package org.example.statify.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.example.statify.model.VenueModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "venues")
+@Accessors(chain = true)
 public class DBVenue {
 
     @Id
@@ -19,7 +22,7 @@ public class DBVenue {
     private Long id;
 
     @Column(name = "api_id", unique = true, nullable = false)
-    private Long apiId;
+    private Integer apiId;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -41,4 +44,9 @@ public class DBVenue {
 
     @Column(name = "image")
     private String image;
+
+    public static DBVenue fromVenueIdOnly(VenueModel venueModel) {
+        return new DBVenue()
+                .setId(venueModel.getId());
+    }
 }

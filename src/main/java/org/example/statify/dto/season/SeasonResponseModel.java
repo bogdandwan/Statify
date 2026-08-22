@@ -1,7 +1,8 @@
-package org.example.statify.dto;
+package org.example.statify.dto.season;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.statify.dto.coverage.CoverageResponseModel;
 
 @Getter
 @Setter

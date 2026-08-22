@@ -1,6 +1,6 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.VenueResponseModel;
+import org.example.statify.dto.venue.VenueResponseModel;
 import org.example.statify.entity.DBVenue;
 import org.example.statify.model.VenueModel;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class VenueMapper {
 
         DBVenue entity = new DBVenue();
 
-        entity.setApiId(model.getId());
+        entity.setApiId(model.getApiId());
         entity.setName(model.getName());
         entity.setAddress(model.getAddress());
         entity.setCity(model.getCity());
