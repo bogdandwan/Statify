@@ -3,11 +3,14 @@ package org.example.statify.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.example.statify.model.TeamModel;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "teams")
+@Accessors(chain = true)
 public class DBTeam {
 
     @Id
@@ -15,7 +18,7 @@ public class DBTeam {
     private Long id;
 
     @Column(name = "api_id", unique = true, nullable = false)
-    private Long apiId;
+    private Integer apiId;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -34,4 +37,9 @@ public class DBTeam {
 
     @Column(name = "logo")
     private String logo;
+
+    public static DBTeam fromTeamIdOnly(TeamModel teamModel) {
+        return new  DBTeam()
+                .setId(teamModel.getId());
+    }
 }

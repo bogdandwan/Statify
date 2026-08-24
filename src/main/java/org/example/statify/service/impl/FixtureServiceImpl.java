@@ -4,11 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.statify.client.impl.FootballApiClientImpl;
-import org.example.statify.dto.DTOResponseModel;
-import org.example.statify.dto.fixture.FixtureResponseModel;
-import org.example.statify.dto.fixture.FixtureSearch;
-import org.example.statify.dto.score.ScoreDetailResponseModel;
-import org.example.statify.dto.score.ScoreResponseModel;
+import org.example.statify.api.ApiResponseModel;
+import org.example.statify.api.fixture.FixtureResponseModel;
+import org.example.statify.api.FixtureSearch;
+import org.example.statify.api.score.ScoreDetailResponseModel;
+import org.example.statify.api.score.ScoreResponseModel;
 import org.example.statify.entity.*;
 import org.example.statify.entity.enums.ScoreType;
 import org.example.statify.entity.exceptions.NotFoundException;
@@ -18,6 +18,7 @@ import org.example.statify.model.FixtureModel;
 import org.example.statify.model.ScoreModel;
 import org.example.statify.repository.*;
 import org.example.statify.service.FixtureService;
+import org.example.statify.service.TeamService;
 import org.example.statify.service.VenueService;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ public class FixtureServiceImpl implements FixtureService {
     private final SeasonRepository seasonRepository;
     private final TeamRepository teamRepository;
     private final VenueService venueService;
+    private final TeamService teamService;
 
     @Transactional
     @Override
@@ -45,7 +47,7 @@ public class FixtureServiceImpl implements FixtureService {
         log.info("Importing fixtures for league "+leagueId);
 
         final FixtureSearch search = new FixtureSearch(leagueId,seasonYear) ;
-        DTOResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
+        ApiResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
 
         for (FixtureResponseModel responseModel : response.getResponse()) {
             FixtureModel fixtureModel = fixtureMapper.toModel(responseModel);
@@ -61,12 +63,12 @@ public class FixtureServiceImpl implements FixtureService {
                     .orElseThrow(() ->
                             new NotFoundException("Season not found: " + fixtureModel.getSeasonYear()));
 
-            DBTeam homeTeam = teamRepository.findByApiId(fixtureModel.getHomeTeamId())
-                    .orElseThrow(() ->
-                            new NotFoundException("Home team not found: " + fixtureModel.getHomeTeamId()));
+            DBTeam homeTeam = teamRepository.findByApiId(fixtureModel.getHomeTeamId());
 
-            DBTeam awayTeam = teamRepository.findByApiId(fixtureModel.getAwayTeamId())
-                    .orElseThrow(() -> new NotFoundException("Away team not found: " + fixtureModel.getAwayTeamId()));
+            /*DBTeam awayTeam = teamRepository.findByApiId(fixtureModel.getAwayTeamId())
+                    .orElseThrow(() -> new NotFoundException("Away team not found: " + fixtureModel.getAwayTeamId()));*/
+
+            fixture.setAwayTeam(DBTeam.fromTeamIdOnly(teamService.getTeamByApiId(fixtureModel.getAwayTeamId())));
 
             fixture.setVenue(DBVenue.fromVenueIdOnly(venueService.getVenueByApiId(fixtureModel.getVenue().getApiId())));
 

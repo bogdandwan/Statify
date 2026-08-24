@@ -1,7 +1,7 @@
 package org.example.statify.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.example.statify.dto.coverage.CoverageResponseModel;
+import org.example.statify.api.coverage.CoverageResponseModel;
 import org.example.statify.entity.DBCoverage;
 import org.example.statify.model.CoverageModel;
 import org.springframework.stereotype.Component;

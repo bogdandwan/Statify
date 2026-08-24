@@ -1,6 +1,6 @@
 package org.example.statify.controller;
 
-import org.example.statify.dto.error.ApiError;
+import org.example.statify.api.error.ApiError;
 import org.example.statify.entity.exceptions.ClientErrorException;
 import org.example.statify.entity.exceptions.ForbiddenException;
 import org.example.statify.entity.exceptions.ValidationException;

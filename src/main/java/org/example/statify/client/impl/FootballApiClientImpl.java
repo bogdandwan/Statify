@@ -1,15 +1,13 @@
 package org.example.statify.client.impl;
 
+import org.example.statify.api.country.CountryResponseModel;
 import org.example.statify.client.FootballApiClientService;
-import org.example.statify.dto.DTOResponseModel;
-import org.example.statify.dto.LeagueSearch;
-import org.example.statify.dto.league.LeagueResponseModel;
-import org.example.statify.dto.VenueSearch;
-import org.example.statify.dto.fixture.FixtureResponseModel;
-import org.example.statify.dto.fixture.FixtureSearch;
-import org.example.statify.dto.player.PlayerResponseModel;
-import org.example.statify.dto.team.TeamApiResponseModel;
-import org.example.statify.dto.venue.VenueResponseModel;
+import org.example.statify.api.*;
+import org.example.statify.api.league.LeagueResponseModel;
+import org.example.statify.api.fixture.FixtureResponseModel;
+import org.example.statify.api.player.PlayerResponseModel;
+import org.example.statify.api.team.TeamApiResponseModel;
+import org.example.statify.api.venue.VenueResponseModel;
 import org.example.statify.model.CountryModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -23,8 +21,10 @@ public class FootballApiClientImpl implements FootballApiClientService {
 
     private final WebClient webClient;
     private final String apiKey;
-    private final static String LEAGUES_API =  "/leagues";
+    private final static String LEAGUES_API = "/leagues";
     private final static String VENUES_API = "/venues";
+    private final static String COUNTRIES_API = "/countries";
+    private final static String TEAMS_API = "/teams";
 
 
     public FootballApiClientImpl(WebClient.Builder builder,
@@ -39,16 +39,8 @@ public class FootballApiClientImpl implements FootballApiClientService {
                 .build();
     }
 
-
-    /*public DTOResponseModel<LeagueResponseModel> getLeagues() {
-        return get(
-                LEAGUES_API,
-                new ParameterizedTypeReference<DTOResponseModel<LeagueResponseModel>>() {}
-        );
-    }*/
-
     @Override
-    public DTOResponseModel<LeagueResponseModel> getLeagues(LeagueSearch search) {
+    public ApiResponseModel<LeagueResponseModel> getLeagues(LeagueSearch search) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(LEAGUES_API)
@@ -64,12 +56,12 @@ public class FootballApiClientImpl implements FootballApiClientService {
                         .queryParamIfPresent("last", Optional.ofNullable(search.getLast()))
                         .build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DTOResponseModel<LeagueResponseModel>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<LeagueResponseModel>>() {})
                 .block();
     }
 
     @Override
-    public DTOResponseModel<VenueResponseModel> getVenues(VenueSearch search) {
+    public ApiResponseModel<VenueResponseModel> getVenues(VenueSearch search) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(VENUES_API)
@@ -80,20 +72,26 @@ public class FootballApiClientImpl implements FootballApiClientService {
                         .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
                         .build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DTOResponseModel<VenueResponseModel>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<VenueResponseModel>>() {})
                 .block();
     }
 
-    public DTOResponseModel<CountryModel> getCountries() {
+    public ApiResponseModel<CountryModel> getCountries(CountrySearch search) {
 
         return webClient.get()
-                .uri("/countries")
+                .uri(uriBuilder -> uriBuilder
+                        .path(COUNTRIES_API)
+                        .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
+                        .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
+                        .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                        .build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DTOResponseModel<CountryModel>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<CountryModel>>() {})
                 .block();
     }
 
-    public DTOResponseModel<FixtureResponseModel> getFixtures(FixtureSearch fixtureSearch) {
+
+    public ApiResponseModel<FixtureResponseModel> getFixtures(FixtureSearch fixtureSearch) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -102,23 +100,30 @@ public class FootballApiClientImpl implements FootballApiClientService {
                         .queryParamIfPresent("season", Optional.ofNullable(fixtureSearch.getSeasonYear()))
                         .build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DTOResponseModel<FixtureResponseModel>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<FixtureResponseModel>>() {})
                 .block();
     }
 
-    public DTOResponseModel<TeamApiResponseModel> getTeamsByCountry(String country) {
+    public ApiResponseModel<TeamApiResponseModel> getTeamsByCountry(TeamSearch search) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/teams")
-                        .queryParam("country", country)
+                        .path(TEAMS_API)
+                        .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                        .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
+                        .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
+                        .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                        .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
+                        .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
+                        .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
                         .build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DTOResponseModel<TeamApiResponseModel>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<TeamApiResponseModel>>() {})
                 .block();
     }
 
-    public DTOResponseModel<PlayerResponseModel> getPlayers(Long leagueId, Integer seasonYear, Integer page) {
+
+    public ApiResponseModel<PlayerResponseModel> getPlayers(Long leagueId, Integer seasonYear, Integer page) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -128,7 +133,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
                         .queryParam("page", page)
                         .build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<DTOResponseModel<PlayerResponseModel>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<PlayerResponseModel>>() {})
                 .block();
     }
 
@@ -140,6 +145,4 @@ public class FootballApiClientImpl implements FootballApiClientService {
                 .bodyToMono(responseType)
                 .block();
     }
-
-
 }

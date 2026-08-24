@@ -3,7 +3,7 @@ package org.example.statify.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.statify.dto.score.ScoreResponseModel;
+import org.example.statify.api.score.ScoreResponseModel;
 import org.example.statify.entity.DBFixture;
 
 import java.time.OffsetDateTime;
@@ -26,8 +26,8 @@ public class FixtureModel {
     private Integer extra;
     private Integer leagueId;
     private Integer seasonYear;
-    private Long homeTeamId;
-    private Long awayTeamId;
+    private Integer homeTeamId;
+    private Integer awayTeamId;
     private VenueModel venue;
     private ScoreResponseModel score;
 

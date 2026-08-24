@@ -1,6 +1,6 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.venue.VenueResponseModel;
+import org.example.statify.api.venue.VenueResponseModel;
 import org.example.statify.entity.DBVenue;
 import org.example.statify.model.VenueModel;
 import org.springframework.stereotype.Component;

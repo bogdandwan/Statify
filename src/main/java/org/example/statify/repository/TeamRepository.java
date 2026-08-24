@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<DBTeam, Long> {
 
-    Optional<DBTeam> findByApiId(Long apiId);
+    DBTeam findByApiId(Integer apiId);
 
-    boolean existsByApiId(Long apiId);
+    boolean existsByApiId(Integer apiId);
 
 }

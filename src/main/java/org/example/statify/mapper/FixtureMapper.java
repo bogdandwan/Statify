@@ -1,10 +1,9 @@
 package org.example.statify.mapper;
 
 
-import org.example.statify.dto.fixture.FixtureResponseModel;
+import org.example.statify.api.fixture.FixtureResponseModel;
 import org.example.statify.entity.*;
 import org.example.statify.model.FixtureModel;
-import org.example.statify.model.VenueModel;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -29,8 +28,8 @@ public class FixtureMapper {
         model.setExtra(response.getFixture().getStatus().getExtra());
         model.setLeagueId(response.getLeague().getId());
         model.setSeasonYear(response.getLeague().getSeason());
-        model.setHomeTeamId(response.getTeams().getHome().getId());
-        model.setAwayTeamId(response.getTeams().getAway().getId());
+        model.setHomeTeamId(response.getTeams().getHome().getId().intValue());
+        model.setAwayTeamId(response.getTeams().getAway().getId().intValue());
         model.setScore(response.getScore());
 
         return model;

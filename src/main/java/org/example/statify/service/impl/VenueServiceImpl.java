@@ -3,9 +3,9 @@ package org.example.statify.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.client.FootballApiClientService;
-import org.example.statify.dto.DTOResponseModel;
-import org.example.statify.dto.venue.VenueResponseModel;
-import org.example.statify.dto.VenueSearch;
+import org.example.statify.api.ApiResponseModel;
+import org.example.statify.api.venue.VenueResponseModel;
+import org.example.statify.api.VenueSearch;
 import org.example.statify.entity.DBVenue;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.VenueMapper;
@@ -28,14 +28,14 @@ public class VenueServiceImpl implements VenueService {
 
         final VenueSearch search = new VenueSearch()
                 .setCountry(country);
-        DTOResponseModel<VenueResponseModel> response = footballApiClient.getVenues(search);
+        ApiResponseModel<VenueResponseModel> response = footballApiClient.getVenues(search);
 
         for (VenueResponseModel responseModel : response.getResponse()) {
             saveFromApiVenue(responseModel);
         }
     }
 
-    private VenueModel saveFromApiVenue(VenueResponseModel venueResponseModel) {
+    public VenueModel saveFromApiVenue(VenueResponseModel venueResponseModel) {
         VenueModel venueModel = venueMapper.toModel(venueResponseModel);
         if (venueRepository.existsByApiId(venueModel.getApiId())) {
             return null;
@@ -57,10 +57,10 @@ public class VenueServiceImpl implements VenueService {
         return new VenueModel(dbVenue);
     }
 
-    private VenueModel saveVenueById(Integer venueId) {
+    public VenueModel saveVenueById(Integer venueId) {
         final VenueSearch search = new VenueSearch()
                 .setId(venueId);
-        final DTOResponseModel<VenueResponseModel> responseModel = footballApiClient.getVenues(search);
+        final ApiResponseModel<VenueResponseModel> responseModel = footballApiClient.getVenues(search);
         if (responseModel == null || responseModel.getResponse() == null || responseModel.getResponse().size() != 1) {
             throw new ValidationException("Venue by id:"+venueId+" not found");
         }

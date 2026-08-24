@@ -1,7 +1,7 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.player.PlayerDataResponseModel;
-import org.example.statify.dto.player.PlayerResponseModel;
+import org.example.statify.api.player.PlayerDataResponseModel;
+import org.example.statify.api.player.PlayerResponseModel;
 import org.example.statify.entity.DBPlayer;
 import org.example.statify.model.PlayerModel;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.score.ScoreDetailResponseModel;
+import org.example.statify.api.score.ScoreDetailResponseModel;
 import org.example.statify.entity.DBFixture;
 import org.example.statify.entity.DBScore;
 import org.example.statify.entity.enums.ScoreType;

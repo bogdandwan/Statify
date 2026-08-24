@@ -3,18 +3,14 @@ package org.example.statify.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.client.impl.FootballApiClientImpl;
-import org.example.statify.dto.DTOResponseModel;
-import org.example.statify.dto.LeagueSearch;
-import org.example.statify.dto.league.LeagueResponseModel;
-import org.example.statify.dto.venue.VenueResponseModel;
+import org.example.statify.api.ApiResponseModel;
+import org.example.statify.api.LeagueSearch;
+import org.example.statify.api.league.LeagueResponseModel;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.DBLeague;
-import org.example.statify.entity.DBVenue;
-import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.LeagueMapper;
 import org.example.statify.model.LeagueModel;
-import org.example.statify.model.VenueModel;
 import org.example.statify.repository.CountryRepository;
 import org.example.statify.repository.LeagueRepository;
 import org.example.statify.service.LeagueService;
@@ -35,14 +31,17 @@ public class LeagueServiceImpl implements LeagueService {
     public void importLeagues() {
 
         final LeagueSearch search = new LeagueSearch();
-        DTOResponseModel<LeagueResponseModel> response = footballApiClient.getLeagues(search);
+
+        ApiResponseModel<LeagueResponseModel> response =
+                footballApiClient.getLeagues(search);
 
         for (LeagueResponseModel responseModel : response.getResponse()) {
             saveFromApiLeague(responseModel);
         }
     }
 
-    public LeagueModel saveFromApiLeague(LeagueResponseModel leagueResponseModel) {
+    private LeagueModel saveFromApiLeague(LeagueResponseModel leagueResponseModel) {
+
         LeagueModel leagueModel = leagueMapper.toModel(leagueResponseModel);
         if (leagueRepository.existsByApiId(leagueModel.getApiId())) {
             return null;
@@ -74,7 +73,7 @@ public class LeagueServiceImpl implements LeagueService {
     public LeagueModel saveLeagueById(Integer leagueId) {
         final LeagueSearch search = new LeagueSearch()
                 .setId(leagueId);
-        final DTOResponseModel<LeagueResponseModel> responseModel = footballApiClient.getLeagues(search);
+        final ApiResponseModel<LeagueResponseModel> responseModel = footballApiClient.getLeagues(search);
         if (responseModel == null || responseModel.getResponse() == null || responseModel.getResponse().size() != 1) {
             throw new ValidationException("League by id:"+leagueId+" not found");
         }

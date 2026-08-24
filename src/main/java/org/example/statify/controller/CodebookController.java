@@ -18,8 +18,8 @@ public class CodebookController {
     private final PlayerService playerService;
 
     @PostMapping("/country")
-    public void importCountries() {
-        countryService.importCountries();
+    public void importCountries(String name) {
+        countryService.importCountries(name);
     }
 
     @PostMapping("/fixtures")

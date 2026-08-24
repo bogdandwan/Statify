@@ -1,7 +1,7 @@
 package org.example.statify.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.example.statify.dto.league.LeagueResponseModel;
+import org.example.statify.api.league.LeagueResponseModel;
 import org.example.statify.entity.DBLeague;
 import org.example.statify.entity.DBSeason;
 import org.example.statify.model.LeagueModel;
@@ -12,14 +12,14 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class LeagueMapper {
-    private final SeasonMapper seasonMapper;
 
+    private final SeasonMapper seasonMapper;
 
     public LeagueModel toModel(LeagueResponseModel response) {
 
         LeagueModel model = new LeagueModel();
 
-        model.setApiId(response.getLeague().getApiId());
+        model.setApiId(response.getLeague().getId().intValue());
         model.setName(response.getLeague().getName());
         model.setType(response.getLeague().getType());
         model.setLogo(response.getLeague().getLogo());
@@ -29,12 +29,10 @@ public class LeagueMapper {
         }
 
         if (response.getSeasons() != null) {
-            model.setSeasons(
-                    response.getSeasons()
+            model.setSeasons(response.getSeasons()
                             .stream()
                             .map(seasonMapper::toModel)
-                            .toList()
-            );
+                            .toList());
         }
 
         return model;
@@ -52,8 +50,7 @@ public class LeagueMapper {
 
         if (model.getSeasons() != null) {
 
-            List<DBSeason> seasons =
-                    model.getSeasons()
+            List<DBSeason> seasons = model.getSeasons()
                             .stream()
                             .map(seasonMapper::toEntity)
                             .toList();

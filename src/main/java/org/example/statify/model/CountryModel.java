@@ -1,11 +1,13 @@
 package org.example.statify.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.statify.entity.DBCountry;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class CountryModel {
 
     private Long id;

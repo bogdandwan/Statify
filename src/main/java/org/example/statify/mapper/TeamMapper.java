@@ -1,6 +1,6 @@
 package org.example.statify.mapper;
 
-import org.example.statify.dto.team.TeamApiResponseModel;
+import org.example.statify.api.team.TeamApiResponseModel;
 import org.example.statify.entity.DBTeam;
 import org.example.statify.model.TeamModel;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ public class TeamMapper {
 
         TeamModel model = new TeamModel();
 
-        model.setId(response.getTeam().getId());
+        model.setApiId(response.getTeam().getId().intValue());
         model.setName(response.getTeam().getName());
         model.setCode(response.getTeam().getCode());
         model.setCountry(response.getTeam().getCountry());
@@ -27,7 +27,7 @@ public class TeamMapper {
 
         DBTeam entity = new DBTeam();
 
-        entity.setApiId(model.getId());
+        entity.setApiId(model.getApiId());
         entity.setName(model.getName());
         entity.setCode(model.getCode());
         entity.setCountry(model.getCountry());
