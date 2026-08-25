@@ -20,26 +20,16 @@ public class DBFixture {
     private Long id;
 
     @Column(name = "api_id", nullable = false, unique = true)
-    private Long apiId;
-
+    private Integer apiId;
     private String referee;
-
     private String timezone;
-
     private OffsetDateTime date;
-
     private Long timestamp;
-
     private Long firstPeriod;
-
     private Long secondPeriod;
-
     private String statusLong;
-
     private String statusShort;
-
     private Integer elapsed;
-
     private Integer extra;
 
     @ManyToOne(fetch = FetchType.LAZY)

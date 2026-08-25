@@ -12,7 +12,7 @@ public class VenueMapper {
 
         VenueModel model = new VenueModel();
 
-        model.setId(response.getId());
+        model.setApiId(response.getId().intValue());
         model.setName(response.getName());
         model.setAddress(response.getAddress());
         model.setCity(response.getCity());

@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface SeasonRepository extends JpaRepository<DBSeason, Long> {
 
-    Optional<DBSeason> findByLeagueApiIdAndYear(Integer leagueApiId, Integer year);
+    DBSeason findByLeagueApiIdAndYear(Integer leagueApiId, Integer year);
 
 }

@@ -23,7 +23,10 @@ public class CodebookController {
     }
 
     @PostMapping("/fixtures")
-    public void importFixtures(Long leagueId, Integer seasonYear) {
+    public void importFixtures(
+            @RequestParam("league") Integer leagueId,
+            @RequestParam("season") Integer seasonYear) {
+
         fixtureService.importFixtures(leagueId, seasonYear);
     }
 

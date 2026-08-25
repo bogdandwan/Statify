@@ -25,6 +25,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
     private final static String VENUES_API = "/venues";
     private final static String COUNTRIES_API = "/countries";
     private final static String TEAMS_API = "/teams";
+    private final static String FIXTURE_API = "/fixtures";
 
 
     public FootballApiClientImpl(WebClient.Builder builder,
@@ -91,13 +92,22 @@ public class FootballApiClientImpl implements FootballApiClientService {
     }
 
 
-    public ApiResponseModel<FixtureResponseModel> getFixtures(FixtureSearch fixtureSearch) {
+    public ApiResponseModel<FixtureResponseModel> getFixtures(FixtureSearch search) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/fixtures")
-                        .queryParamIfPresent("league", Optional.ofNullable(fixtureSearch.getLeagueId()))
-                        .queryParamIfPresent("season", Optional.ofNullable(fixtureSearch.getSeasonYear()))
+                        .path(FIXTURE_API)
+                        .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                        .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
+                        .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                        .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
+                        .queryParamIfPresent("date", Optional.ofNullable(search.getDate()))
+                        .queryParamIfPresent("from", Optional.ofNullable(search.getFrom()))
+                        .queryParamIfPresent("to", Optional.ofNullable(search.getTo()))
+                        .queryParamIfPresent("status", Optional.ofNullable(search.getStatus()))
+                        .queryParamIfPresent("timezone", Optional.ofNullable(search.getTimezone()))
+                        .queryParamIfPresent("last", Optional.ofNullable(search.getLast()))
+                        .queryParamIfPresent("next", Optional.ofNullable(search.getNext()))
                         .build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<FixtureResponseModel>>() {})

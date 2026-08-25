@@ -3,11 +3,13 @@ package org.example.statify.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.example.statify.entity.DBVenue;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Accessors(chain=true)
 public class VenueModel {
 
     private Long id;

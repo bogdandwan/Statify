@@ -4,6 +4,7 @@ package org.example.statify.mapper;
 import org.example.statify.api.fixture.FixtureResponseModel;
 import org.example.statify.entity.*;
 import org.example.statify.model.FixtureModel;
+import org.example.statify.model.VenueModel;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -15,7 +16,7 @@ public class FixtureMapper {
 
         FixtureModel model = new FixtureModel();
 
-        model.setId(response.getFixture().getId());
+        model.setApiId(response.getFixture().getId().intValue());
         model.setReferee(response.getFixture().getReferee());
         model.setTimezone(response.getFixture().getTimezone());
         model.setDate(OffsetDateTime.parse(response.getFixture().getDate()));
@@ -30,6 +31,15 @@ public class FixtureMapper {
         model.setSeasonYear(response.getLeague().getSeason());
         model.setHomeTeamId(response.getTeams().getHome().getId().intValue());
         model.setAwayTeamId(response.getTeams().getAway().getId().intValue());
+        if (response.getFixture().getVenue() != null) {
+
+            VenueModel venue = new VenueModel()
+                    .setApiId(response.getFixture().getVenue().getId().intValue())
+                    .setName(response.getFixture().getVenue().getName())
+                    .setCity(response.getFixture().getVenue().getCity());
+
+            model.setVenue(venue);
+        }
         model.setScore(response.getScore());
 
         return model;
@@ -39,7 +49,7 @@ public class FixtureMapper {
 
         DBFixture entity = new DBFixture();
 
-        entity.setApiId(model.getId());
+        entity.setApiId(model.getApiId());
         entity.setReferee(model.getReferee());
         entity.setTimezone(model.getTimezone());
         entity.setDate(model.getDate());
