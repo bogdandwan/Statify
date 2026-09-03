@@ -7,7 +7,6 @@ import lombok.Setter;
 @Setter
 public class ScoreDetailResponseModel {
 
-    private Integer home;
-    private Integer away;
-
+  private Integer home;
+  private Integer away;
 }

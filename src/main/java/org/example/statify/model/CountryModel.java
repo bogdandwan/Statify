@@ -10,15 +10,15 @@ import org.example.statify.entity.DBCountry;
 @NoArgsConstructor
 public class CountryModel {
 
-    private Long id;
-    private String name;
-    private String code;
-    private String flag;
+  private Long id;
+  private String name;
+  private String code;
+  private String flag;
 
-    public CountryModel(DBCountry dbCountry) {
-        this.id = dbCountry.getId();
-        this.name = dbCountry.getName();
-        this.code = dbCountry.getCode();
-        this.flag = dbCountry.getFlag();
-    }
+  public CountryModel(DBCountry dbCountry) {
+    this.id = dbCountry.getId();
+    this.name = dbCountry.getName();
+    this.code = dbCountry.getCode();
+    this.flag = dbCountry.getFlag();
+  }
 }

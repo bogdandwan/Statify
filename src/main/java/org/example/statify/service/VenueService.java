@@ -5,11 +5,11 @@ import org.example.statify.model.VenueModel;
 
 public interface VenueService {
 
-    void importVenues(String country);
+  void importVenues(String country);
 
-    VenueModel getVenueByApiId(Integer venueId);
+  VenueModel getVenueByApiId(Integer venueId);
 
-    VenueModel saveFromApiVenue(VenueResponseModel venueResponseModel);
+  VenueModel saveFromApiVenue(VenueResponseModel venueResponseModel);
 
-    VenueModel saveVenueById(Integer venueId);
+  VenueModel saveVenueById(Integer venueId);
 }

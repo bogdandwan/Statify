@@ -8,9 +8,9 @@ import org.example.statify.api.coverage.CoverageResponseModel;
 @Setter
 public class SeasonResponseModel {
 
-    private Integer year;
-    private String start;
-    private String end;
-    private Boolean current;
-    private CoverageResponseModel coverage;
+  private Integer year;
+  private String start;
+  private String end;
+  private Boolean current;
+  private CoverageResponseModel coverage;
 }

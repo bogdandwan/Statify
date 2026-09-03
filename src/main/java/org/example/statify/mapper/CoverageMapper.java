@@ -10,37 +10,34 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CoverageMapper {
 
+  public CoverageModel toModel(CoverageResponseModel response) {
 
-    public CoverageModel toModel(CoverageResponseModel response) {
+    CoverageModel model = new CoverageModel();
 
-        CoverageModel model = new CoverageModel();
+    model.setStandings(response.getStandings());
+    model.setPlayers(response.getPlayers());
+    model.setTopScorers(response.getTop_scorers());
+    model.setTopAssists(response.getTop_assists());
+    model.setTopCards(response.getTop_cards());
+    model.setInjuries(response.getInjuries());
+    model.setPredictions(response.getPredictions());
+    model.setOdds(response.getOdds());
 
-        model.setStandings(response.getStandings());
-        model.setPlayers(response.getPlayers());
-        model.setTopScorers(response.getTop_scorers());
-        model.setTopAssists(response.getTop_assists());
-        model.setTopCards(response.getTop_cards());
-        model.setInjuries(response.getInjuries());
-        model.setPredictions(response.getPredictions());
-        model.setOdds(response.getOdds());
+    return model;
+  }
 
+  public DBCoverage toEntity(CoverageModel model) {
+    DBCoverage entity = new DBCoverage();
 
-        return model;
-    }
+    entity.setStandings(model.getStandings());
+    entity.setPlayers(model.getPlayers());
+    entity.setTopScorers(model.getTopScorers());
+    entity.setTopAssists(model.getTopAssists());
+    entity.setTopCards(model.getTopCards());
+    entity.setInjuries(model.getInjuries());
+    entity.setPredictions(model.getPredictions());
+    entity.setOdds(model.getOdds());
 
-    public DBCoverage toEntity(CoverageModel model) {
-        DBCoverage entity = new DBCoverage();
-
-        entity.setStandings(model.getStandings());
-        entity.setPlayers(model.getPlayers());
-        entity.setTopScorers(model.getTopScorers());
-        entity.setTopAssists(model.getTopAssists());
-        entity.setTopCards(model.getTopCards());
-        entity.setInjuries(model.getInjuries());
-        entity.setPredictions(model.getPredictions());
-        entity.setOdds(model.getOdds());
-
-        return entity;
-    }
-
+    return entity;
+  }
 }

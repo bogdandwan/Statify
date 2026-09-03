@@ -1,10 +1,9 @@
 package org.example.statify.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -12,50 +11,50 @@ import java.time.LocalDate;
 @Table(name = "players")
 public class DBPlayer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "api_id", unique = true, nullable = false)
-    private Integer apiId;
+  @Column(name = "api_id", unique = true, nullable = false)
+  private Integer apiId;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @Column(name = "firstname")
-    private String firstname;
+  @Column(name = "firstname")
+  private String firstname;
 
-    @Column(name = "lastname")
-    private String lastname;
+  @Column(name = "lastname")
+  private String lastname;
 
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
+  @Column(name = "birth_date")
+  private LocalDate birthDate;
 
-    @Column(name = "birth_place")
-    private String birthPlace;
+  @Column(name = "birth_place")
+  private String birthPlace;
 
-    @Column(name = "birth_country")
-    private String birthCountry;
+  @Column(name = "birth_country")
+  private String birthCountry;
 
-    @Column(name = "nationality")
-    private String nationality;
+  @Column(name = "nationality")
+  private String nationality;
 
-    @Column(name = "height")
-    private String height;
+  @Column(name = "height")
+  private String height;
 
-    @Column(name = "weight")
-    private String weight;
+  @Column(name = "weight")
+  private String weight;
 
-    @Column(name = "number")
-    private Integer number;
+  @Column(name = "number")
+  private Integer number;
 
-    @Column(name = "position")
-    private String position;
+  @Column(name = "position")
+  private String position;
 
-    @Column(name = "photo")
-    private String photo;
+  @Column(name = "photo")
+  private String photo;
 
-    /*@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "currentTeam_id")
-    private DBTeam currentTeam;*/
+  /*@OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "currentTeam_id")
+  private DBTeam currentTeam;*/
 }

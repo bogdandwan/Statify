@@ -11,8 +11,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class CountrySearch {
 
-    private String name;
-    private String code;
-    private String fullText;
-
+  private String name;
+  private String code;
+  private String fullText;
 }

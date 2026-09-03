@@ -8,13 +8,13 @@ import org.example.statify.api.fixture.FixtureResponseModel;
 @Setter
 public class CoverageResponseModel {
 
-    private FixtureResponseModel fixtures;
-    private Boolean standings;
-    private Boolean players;
-    private Boolean top_scorers;
-    private Boolean top_assists;
-    private Boolean top_cards;
-    private Boolean injuries;
-    private Boolean predictions;
-    private Boolean odds;
+  private FixtureResponseModel fixtures;
+  private Boolean standings;
+  private Boolean players;
+  private Boolean top_scorers;
+  private Boolean top_assists;
+  private Boolean top_cards;
+  private Boolean injuries;
+  private Boolean predictions;
+  private Boolean odds;
 }

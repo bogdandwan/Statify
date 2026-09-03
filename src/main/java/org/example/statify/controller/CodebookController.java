@@ -10,41 +10,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CodebookController {
 
-    private final CountryService  countryService;
-    private final FixtureService fixtureService;
-    private final LeagueService leagueService;
-    private final TeamService teamService;
-    private final VenueService venueService;
-    private final PlayerService playerService;
+  private final CountryService countryService;
+  private final FixtureService fixtureService;
+  private final LeagueService leagueService;
+  private final TeamService teamService;
+  private final VenueService venueService;
+  private final PlayerService playerService;
 
-    @PostMapping("/country")
-    public void importCountries(String name) {
-        countryService.importCountries(name);
-    }
+  @PostMapping("/country")
+  public void importCountries(String name) {
+    countryService.importCountries(name);
+  }
 
-    @PostMapping("/fixtures")
-    public void importFixtures(@RequestParam("league") Integer leagueId, @RequestParam("season") Integer seasonYear) {
-        fixtureService.importFixtures(leagueId, seasonYear);
-    }
+  @PostMapping("/fixtures")
+  public void importFixtures(
+      @RequestParam("league") Integer leagueId, @RequestParam("season") Integer seasonYear) {
+    fixtureService.importFixtures(leagueId, seasonYear);
+  }
 
-    @PostMapping("/leagues")
-    public void importLeagues() {
-        leagueService.importLeagues();
-    }
+  @PostMapping("/leagues")
+  public void importLeagues() {
+    leagueService.importLeagues();
+  }
 
-    @PostMapping("/teams")
-    public void importTeams(String country) {
-        teamService.importTeams(country);
-    }
+  @PostMapping("/teams")
+  public void importTeams(String country) {
+    teamService.importTeams(country);
+  }
 
-    @PostMapping("/venues")
-    public void importVenue(String country) {
-        venueService.importVenues(country);
-    }
+  @PostMapping("/venues")
+  public void importVenue(String country) {
+    venueService.importVenues(country);
+  }
 
-    @PostMapping("/players")
-    public void importPlayers(@RequestParam Integer leagueId, @RequestParam Integer season) {
-        playerService.importPlayer(leagueId, season);
-    }
-
+  @PostMapping("/players")
+  public void importPlayers(@RequestParam Integer leagueId, @RequestParam Integer season) {
+    playerService.importPlayer(leagueId, season);
+  }
 }

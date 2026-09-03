@@ -7,12 +7,12 @@ import lombok.Setter;
 @Setter
 public class FixtureLeagueResponseModel {
 
-    private Integer id;
-    private String name;
-    private String country;
-    private String logo;
-    private String flag;
-    private Integer season;
-    private String round;
-    private Boolean standings;
+  private Integer id;
+  private String name;
+  private String country;
+  private String logo;
+  private String flag;
+  private Integer season;
+  private String round;
+  private Boolean standings;
 }

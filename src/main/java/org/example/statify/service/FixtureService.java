@@ -5,10 +5,9 @@ import org.example.statify.model.FixtureModel;
 
 public interface FixtureService {
 
-    void importFixtures(Integer leagueId, Integer seasonYear);
+  void importFixtures(Integer leagueId, Integer seasonYear);
 
-    FixtureModel saveFromApiFixture(FixtureResponseModel responseModel);
+  FixtureModel saveFromApiFixture(FixtureResponseModel responseModel);
 
-    FixtureModel saveFixtureById(Integer fixtureId);
-
+  FixtureModel saveFixtureById(Integer fixtureId);
 }

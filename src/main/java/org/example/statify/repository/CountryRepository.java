@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CountryRepository extends JpaRepository<DBCountry, Long> {
 
-    DBCountry findByName(String name);
+  DBCountry findByName(String name);
 
-    boolean existsByName(String name);
-
+  boolean existsByName(String name);
 }

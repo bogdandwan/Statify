@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class TeamResponseModel {
 
-    private FixtureTeamResponseModel home;
-    private FixtureTeamResponseModel away;
+  private FixtureTeamResponseModel home;
+  private FixtureTeamResponseModel away;
 }

@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 public class StatusResponseModel {
 
-    @JsonProperty("long")
-    private String longName;
+  @JsonProperty("long")
+  private String longName;
 
-    @JsonProperty("short")
-    private String shortName;
+  @JsonProperty("short")
+  private String shortName;
 
-    private Integer elapsed;
-    private Integer extra;
+  private Integer elapsed;
+  private Integer extra;
 }

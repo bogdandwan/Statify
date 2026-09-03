@@ -10,16 +10,15 @@ import org.example.statify.model.CountryModel;
 
 public interface FootballApiClientService {
 
+  ApiResponseModel<LeagueResponseModel> getLeagues(LeagueSearch leagueSearch);
 
-    ApiResponseModel<LeagueResponseModel> getLeagues(LeagueSearch leagueSearch);
+  ApiResponseModel<VenueResponseModel> getVenues(VenueSearch venueSearch);
 
-    ApiResponseModel<VenueResponseModel> getVenues(VenueSearch venueSearch);
+  ApiResponseModel<TeamApiResponseModel> getTeamsByCountry(TeamSearch teamSearch);
 
-    ApiResponseModel<TeamApiResponseModel>  getTeamsByCountry(TeamSearch teamSearch);
+  ApiResponseModel<CountryModel> getCountries(CountrySearch search);
 
-    ApiResponseModel<CountryModel> getCountries(CountrySearch search);
+  ApiResponseModel<FixtureResponseModel> getFixtures(FixtureSearch fixtureSearch);
 
-    ApiResponseModel<FixtureResponseModel> getFixtures(FixtureSearch fixtureSearch);
-
-    ApiResponseModel<PlayerResponseModel> getPlayers(PlayerSearch search);
+  ApiResponseModel<PlayerResponseModel> getPlayers(PlayerSearch search);
 }

@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class FixtureTeamResponseModel {
 
-    private Long id;
-    private String name;
-    private String logo;
-    private Boolean winner;
+  private Long id;
+  private String name;
+  private String logo;
+  private Boolean winner;
 }

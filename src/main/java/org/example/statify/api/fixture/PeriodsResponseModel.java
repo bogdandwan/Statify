@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class PeriodsResponseModel {
 
-    private Long first;
-    private Long second;
+  private Long first;
+  private Long second;
 }

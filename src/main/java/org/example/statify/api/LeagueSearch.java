@@ -8,17 +8,17 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @NoArgsConstructor
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class LeagueSearch {
 
-    private Integer id;
-    private String name;
-    private String country;
-    private String code;
-    private String season;
-    private Integer team;
-    private String type;
-    private String current;
-    private String fullText;
-    private String last;
+  private Integer id;
+  private String name;
+  private String country;
+  private String code;
+  private String season;
+  private Integer team;
+  private String type;
+  private String current;
+  private String fullText;
+  private String last;
 }

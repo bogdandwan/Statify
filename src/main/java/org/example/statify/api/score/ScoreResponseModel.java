@@ -7,9 +7,8 @@ import lombok.Setter;
 @Setter
 public class ScoreResponseModel {
 
-    private ScoreDetailResponseModel halftime;
-    private ScoreDetailResponseModel fulltime;
-    private ScoreDetailResponseModel extratime;
-    private ScoreDetailResponseModel penalty;
-
+  private ScoreDetailResponseModel halftime;
+  private ScoreDetailResponseModel fulltime;
+  private ScoreDetailResponseModel extratime;
+  private ScoreDetailResponseModel penalty;
 }

@@ -8,11 +8,11 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @NoArgsConstructor
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class VenueSearch {
-    private Integer id;
-    private String name;
-    private String city;
-    private String country;
-    private String fullText;
+  private Integer id;
+  private String name;
+  private String city;
+  private String country;
+  private String fullText;
 }

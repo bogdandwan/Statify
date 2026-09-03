@@ -2,10 +2,10 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.LeagueSearch;
 import org.example.statify.api.league.LeagueResponseModel;
+import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.DBLeague;
 import org.example.statify.entity.exceptions.ValidationException;
@@ -20,63 +20,62 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LeagueServiceImpl implements LeagueService {
 
+  private final FootballApiClientImpl footballApiClient;
+  private final LeagueMapper leagueMapper;
+  private final LeagueRepository leagueRepository;
+  private final CountryRepository countryRepository;
 
-    private final FootballApiClientImpl footballApiClient;
-    private final LeagueMapper leagueMapper;
-    private final LeagueRepository leagueRepository;
-    private final CountryRepository countryRepository;
+  @Transactional
+  public void importLeagues() {
 
+    ApiResponseModel<LeagueResponseModel> response =
+        footballApiClient.getLeagues(new LeagueSearch());
 
-    @Transactional
-    public void importLeagues() {
+    // response.getResponse().forEach(leagueResponseModel ->
+    // saveFromApiLeague(leagueResponseModel));
+    // response.getResponse().forEach(leagueResponseModel ->
+    // {saveFromApiLeague(leagueResponseModel);});
+    response.getResponse().forEach(this::saveFromApiLeague);
+  }
 
-        ApiResponseModel<LeagueResponseModel> response = footballApiClient.getLeagues(new LeagueSearch());
+  private LeagueModel saveFromApiLeague(LeagueResponseModel leagueResponseModel) {
 
-        //response.getResponse().forEach(leagueResponseModel -> saveFromApiLeague(leagueResponseModel));
-        //response.getResponse().forEach(leagueResponseModel -> {saveFromApiLeague(leagueResponseModel);});
-        response.getResponse().forEach(this::saveFromApiLeague);
-
+    LeagueModel leagueModel = leagueMapper.toModel(leagueResponseModel);
+    if (leagueRepository.existsByApiId(leagueModel.getApiId())) {
+      return null;
     }
 
-    private LeagueModel saveFromApiLeague(LeagueResponseModel leagueResponseModel) {
+    DBLeague league = leagueMapper.toEntity(leagueModel);
+    if (leagueModel.getCountry() != null) {
+      String countryName = leagueModel.getCountry().getName();
+      DBCountry country = countryRepository.findByName(countryName);
 
-        LeagueModel leagueModel = leagueMapper.toModel(leagueResponseModel);
-        if (leagueRepository.existsByApiId(leagueModel.getApiId())) {
-            return null;
-        }
-
-        DBLeague league = leagueMapper.toEntity(leagueModel);
-        if (leagueModel.getCountry() != null) {
-            String countryName = leagueModel.getCountry().getName();
-            DBCountry country = countryRepository.findByName(countryName);
-
-            league.setCountry(country);
-        }
-        DBLeague dbLeague = leagueRepository.save(league);
-
-        return new LeagueModel(dbLeague);
+      league.setCountry(country);
     }
-    @Override
-    @Transactional
-    public LeagueModel getLeagueByApiId(Integer leagueId) {
-        final DBLeague dbLeague = leagueRepository.findByApiId(leagueId);
-        if (dbLeague == null) {
-            return saveLeagueById(leagueId);
-        }
-        return new LeagueModel(dbLeague);
+    DBLeague dbLeague = leagueRepository.save(league);
+
+    return new LeagueModel(dbLeague);
+  }
+
+  @Override
+  @Transactional
+  public LeagueModel getLeagueByApiId(Integer leagueId) {
+    final DBLeague dbLeague = leagueRepository.findByApiId(leagueId);
+    if (dbLeague == null) {
+      return saveLeagueById(leagueId);
     }
+    return new LeagueModel(dbLeague);
+  }
 
-
-
-    public LeagueModel saveLeagueById(Integer leagueId) {
-        final LeagueSearch search = new LeagueSearch()
-                .setId(leagueId);
-        final ApiResponseModel<LeagueResponseModel> responseModel = footballApiClient.getLeagues(search);
-        if (responseModel == null || responseModel.getResponse() == null || responseModel.getResponse().size() != 1) {
-            throw new ValidationException("League by id:"+leagueId+" not found");
-        }
-        return saveFromApiLeague(responseModel.getResponse().get(0));
+  public LeagueModel saveLeagueById(Integer leagueId) {
+    final LeagueSearch search = new LeagueSearch().setId(leagueId);
+    final ApiResponseModel<LeagueResponseModel> responseModel =
+        footballApiClient.getLeagues(search);
+    if (responseModel == null
+        || responseModel.getResponse() == null
+        || responseModel.getResponse().size() != 1) {
+      throw new ValidationException("League by id:" + leagueId + " not found");
     }
-
-
+    return saveFromApiLeague(responseModel.getResponse().get(0));
+  }
 }

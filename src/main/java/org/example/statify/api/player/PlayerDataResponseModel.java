@@ -7,15 +7,15 @@ import lombok.Setter;
 @Setter
 public class PlayerDataResponseModel {
 
-    private Long id;
-    private String name;
-    private String firstname;
-    private String lastname;
-    private BirthResponseModel birth;
-    private String nationality;
-    private String height;
-    private String weight;
-    private Integer number;
-    private String position;
-    private String photo;
+  private Long id;
+  private String name;
+  private String firstname;
+  private String lastname;
+  private BirthResponseModel birth;
+  private String nationality;
+  private String height;
+  private String weight;
+  private Integer number;
+  private String position;
+  private String photo;
 }

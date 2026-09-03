@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PagingModel {
 
-    private Integer current;
-    private Integer total;
-
+  private Integer current;
+  private Integer total;
 }

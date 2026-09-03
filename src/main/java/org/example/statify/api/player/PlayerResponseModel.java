@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class PlayerResponseModel {
 
-    private PlayerDataResponseModel player;
-
+  private PlayerDataResponseModel player;
 }

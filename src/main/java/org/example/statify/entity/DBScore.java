@@ -11,22 +11,21 @@ import org.example.statify.entity.enums.ScoreType;
 @Table(name = "scores")
 public class DBScore {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(name = "home")
-    private Integer home;
+  @Column(name = "home")
+  private Integer home;
 
-    @Column(name = "away")
-    private Integer away;
+  @Column(name = "away")
+  private Integer away;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private ScoreType type;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type", nullable = false)
+  private ScoreType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fixture_id", nullable = false)
-    private DBFixture fixture;
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "fixture_id", nullable = false)
+  private DBFixture fixture;
 }

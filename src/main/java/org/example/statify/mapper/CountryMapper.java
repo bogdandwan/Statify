@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class CountryMapper {
 
-    public DBCountry toEntity(CountryModel countryModel) {
+  public DBCountry toEntity(CountryModel countryModel) {
 
-        DBCountry entity = new DBCountry();
+    DBCountry entity = new DBCountry();
 
-        entity.setName(countryModel.getName());
-        entity.setCode(countryModel.getCode());
-        entity.setFlag(countryModel.getFlag());
+    entity.setName(countryModel.getName());
+    entity.setCode(countryModel.getCode());
+    entity.setFlag(countryModel.getFlag());
 
-        return entity;
-    }
+    return entity;
+  }
 }

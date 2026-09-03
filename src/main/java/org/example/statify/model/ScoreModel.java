@@ -8,8 +8,8 @@ import org.example.statify.entity.enums.ScoreType;
 @Setter
 public class ScoreModel {
 
-    private Long id;
-    private Integer home;
-    private Integer away;
-    private ScoreType type;
+  private Long id;
+  private Integer home;
+  private Integer away;
+  private ScoreType type;
 }

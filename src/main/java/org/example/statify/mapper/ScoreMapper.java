@@ -10,26 +10,47 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScoreMapper {
 
-    public ScoreModel toModel(ScoreDetailResponseModel response, ScoreType type) {
+  public ScoreModel toModel(ScoreDetailResponseModel response, ScoreType type) {
 
-        ScoreModel model = new ScoreModel();
+    ScoreModel model = new ScoreModel();
 
-        model.setHome(response.getHome());
-        model.setAway(response.getAway());
-        model.setType(type);
+    model.setHome(response.getHome());
+    model.setAway(response.getAway());
+    model.setType(type);
 
-        return model;
+    return model;
+  }
+
+  public DBScore toEntity(ScoreModel model, DBFixture fixture) {
+
+    DBScore entity = new DBScore();
+
+    entity.setHome(model.getHome());
+    entity.setAway(model.getAway());
+    entity.setType(model.getType());
+    entity.setFixture(fixture);
+
+    return entity;
+  }
+
+  public ScoreModel toSecondHalfModel(
+      ScoreDetailResponseModel halftime, ScoreDetailResponseModel fulltime) {
+
+    ScoreModel model = new ScoreModel();
+
+    model.setType(ScoreType.SECOND_HALF);
+
+    if (halftime != null && fulltime != null) {
+
+      if (halftime.getHome() != null && fulltime.getHome() != null) {
+        model.setHome(fulltime.getHome() - halftime.getHome());
+      }
+
+      if (halftime.getAway() != null && fulltime.getAway() != null) {
+        model.setAway(fulltime.getAway() - halftime.getAway());
+      }
     }
 
-    public DBScore toEntity(ScoreModel model, DBFixture fixture) {
-
-        DBScore entity = new DBScore();
-
-        entity.setHome(model.getHome());
-        entity.setAway(model.getAway());
-        entity.setType(model.getType());
-        entity.setFixture(fixture);
-
-        return entity;
-    }
+    return model;
+  }
 }

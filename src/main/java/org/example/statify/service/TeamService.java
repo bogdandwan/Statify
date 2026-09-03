@@ -5,11 +5,11 @@ import org.example.statify.model.TeamModel;
 
 public interface TeamService {
 
-    void importTeams(String country);
+  void importTeams(String country);
 
-    TeamModel getTeamByApiId(Integer awayTeamId);
+  TeamModel getTeamByApiId(Integer awayTeamId);
 
-    TeamModel saveTeamById(Integer awayTeamId);
+  TeamModel saveTeamById(Integer awayTeamId);
 
-    TeamModel saveFromApiTeam(TeamApiResponseModel teamApiResponseModel);
+  TeamModel saveFromApiTeam(TeamApiResponseModel teamApiResponseModel);
 }
