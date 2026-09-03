@@ -11,25 +11,25 @@ public class PlayerMapper {
 
     public PlayerModel toModel(PlayerResponseModel playerResponseModel) {
 
-        PlayerDataResponseModel data = playerResponseModel.getPlayer();
+        PlayerDataResponseModel responseModel = playerResponseModel.getPlayer();
 
         PlayerModel model = new PlayerModel();
 
-        model.setId(data.getId());
-        model.setName(data.getName());
-        model.setFirstname(data.getFirstname());
-        model.setLastname(data.getLastname());
-        if (data.getBirth() != null) {
-            model.setBirthDate(data.getBirth().getDate());
-            model.setBirthPlace(data.getBirth().getPlace());
-            model.setBirthCountry(data.getBirth().getCountry());
+        model.setApiId(responseModel.getId().intValue());
+        model.setName(responseModel.getName());
+        model.setFirstname(responseModel.getFirstname());
+        model.setLastname(responseModel.getLastname());
+        if (responseModel.getBirth() != null) {
+            model.setBirthDate(responseModel.getBirth().getDate());
+            model.setBirthPlace(responseModel.getBirth().getPlace());
+            model.setBirthCountry(responseModel.getBirth().getCountry());
         }
-        model.setNationality(data.getNationality());
-        model.setHeight(data.getHeight());
-        model.setWeight(data.getWeight());
-        model.setNumber(data.getNumber());
-        model.setPosition(data.getPosition());
-        model.setPhoto(data.getPhoto());
+        model.setNationality(responseModel.getNationality());
+        model.setHeight(responseModel.getHeight());
+        model.setWeight(responseModel.getWeight());
+        model.setNumber(responseModel.getNumber());
+        model.setPosition(responseModel.getPosition());
+        model.setPhoto(responseModel.getPhoto());
 
         return model;
     }
@@ -38,7 +38,7 @@ public class PlayerMapper {
 
         DBPlayer player = new DBPlayer();
 
-        player.setApiId(model.getId());
+        player.setApiId(model.getApiId());
         player.setName(model.getName());
         player.setFirstname(model.getFirstname());
         player.setLastname(model.getLastname());

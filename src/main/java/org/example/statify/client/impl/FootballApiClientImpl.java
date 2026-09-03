@@ -26,6 +26,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
     private final static String COUNTRIES_API = "/countries";
     private final static String TEAMS_API = "/teams";
     private final static String FIXTURE_API = "/fixtures";
+    private final static String PLAYERS_API = "/players";
 
 
     public FootballApiClientImpl(WebClient.Builder builder,
@@ -133,14 +134,17 @@ public class FootballApiClientImpl implements FootballApiClientService {
     }
 
 
-    public ApiResponseModel<PlayerResponseModel> getPlayers(Long leagueId, Integer seasonYear, Integer page) {
+    public ApiResponseModel<PlayerResponseModel> getPlayers(PlayerSearch search) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/players")
-                        .queryParam("league", leagueId)
-                        .queryParam("season", seasonYear)
-                        .queryParam("page", page)
+                        .path(PLAYERS_API)
+                        .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                        .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
+                        .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
+                        .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                        .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                        .queryParamIfPresent("page", Optional.ofNullable(search.getPage()))
                         .build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<PlayerResponseModel>>() {})

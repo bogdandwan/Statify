@@ -30,14 +30,12 @@ public class LeagueServiceImpl implements LeagueService {
     @Transactional
     public void importLeagues() {
 
-        final LeagueSearch search = new LeagueSearch();
+        ApiResponseModel<LeagueResponseModel> response = footballApiClient.getLeagues(new LeagueSearch());
 
-        ApiResponseModel<LeagueResponseModel> response =
-                footballApiClient.getLeagues(search);
+        //response.getResponse().forEach(leagueResponseModel -> saveFromApiLeague(leagueResponseModel));
+        //response.getResponse().forEach(leagueResponseModel -> {saveFromApiLeague(leagueResponseModel);});
+        response.getResponse().forEach(this::saveFromApiLeague);
 
-        for (LeagueResponseModel responseModel : response.getResponse()) {
-            saveFromApiLeague(responseModel);
-        }
     }
 
     private LeagueModel saveFromApiLeague(LeagueResponseModel leagueResponseModel) {

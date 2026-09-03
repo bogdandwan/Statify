@@ -40,7 +40,6 @@ public class VenueServiceImpl implements VenueService {
         if (venueRepository.existsByApiId(venueModel.getApiId())) {
             return null;
         }
-
         DBVenue venue = venueMapper.toEntity(venueModel);
 
         DBVenue dbVenue = venueRepository.save(venue);

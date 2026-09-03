@@ -23,10 +23,7 @@ public class CodebookController {
     }
 
     @PostMapping("/fixtures")
-    public void importFixtures(
-            @RequestParam("league") Integer leagueId,
-            @RequestParam("season") Integer seasonYear) {
-
+    public void importFixtures(@RequestParam("league") Integer leagueId, @RequestParam("season") Integer seasonYear) {
         fixtureService.importFixtures(leagueId, seasonYear);
     }
 
@@ -46,7 +43,7 @@ public class CodebookController {
     }
 
     @PostMapping("/players")
-    public void importPlayers(@RequestParam Long leagueId, @RequestParam Integer season) {
+    public void importPlayers(@RequestParam Integer leagueId, @RequestParam Integer season) {
         playerService.importPlayer(leagueId, season);
     }
 

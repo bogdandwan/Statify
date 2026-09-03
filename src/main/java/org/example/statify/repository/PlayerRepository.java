@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PlayerRepository extends JpaRepository<DBPlayer, Long> {
 
-    Optional<DBVenue> findByApiId(Long apiId);
+    DBPlayer findByApiId(Integer apiId);
 
+    boolean existsByApiId(Integer apiId);
 }

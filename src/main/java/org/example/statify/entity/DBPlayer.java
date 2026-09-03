@@ -17,7 +17,7 @@ public class DBPlayer {
     private Long id;
 
     @Column(name = "api_id", unique = true, nullable = false)
-    private Long apiId;
+    private Integer apiId;
 
     @Column(name = "name")
     private String name;

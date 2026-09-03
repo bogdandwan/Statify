@@ -18,5 +18,4 @@ public class PlayerDataResponseModel {
     private Integer number;
     private String position;
     private String photo;
-
 }
