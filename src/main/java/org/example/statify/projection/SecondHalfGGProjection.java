@@ -4,16 +4,15 @@ import java.math.BigDecimal;
 
 public interface SecondHalfGGProjection {
 
-    Long getTeamId();
+  Long getTeamId();
 
-    Long getTeamApiId();
+  Long getTeamApiId();
 
-    String getTeamName();
+  String getTeamName();
 
-    Long getGgCount();
+  Long getGgCount();
 
-    Long getMatchesCount();
+  Long getMatchesCount();
 
-    BigDecimal getPercentage();
-
+  BigDecimal getPercentage();
 }

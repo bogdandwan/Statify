@@ -1,11 +1,9 @@
 package org.example.statify.service;
 
-import org.example.statify.model.SecondHalfGGModel;
-
 import java.util.List;
+import org.example.statify.model.TeamGGStatisticsModel;
 
 public interface StatifyService {
 
-    List<SecondHalfGGModel> getTopSecondHalfGG(Integer lastMatches, Integer limit);
-
+  List<TeamGGStatisticsModel> getTopSecondHalfGG(Integer lastMatches, Integer limit);
 }
