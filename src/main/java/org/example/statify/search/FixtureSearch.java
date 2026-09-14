@@ -37,7 +37,7 @@ public class FixtureSearch {
   // ako hoćemo utakmice gde je tim bilo home bilo away
   private Long teamId;
 
-  private Long homeTeamApiId;
-  private Long awayTeamApiId;
-  private Long teamApiId;
+  private Integer homeTeamApiId;
+  private Integer awayTeamApiId;
+  private Integer teamApiId;
 }

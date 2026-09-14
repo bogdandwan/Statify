@@ -1,16 +1,19 @@
 package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.TeamSearch;
 import org.example.statify.api.team.TeamApiResponseModel;
 import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.entity.DBTeam;
+import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.TeamMapper;
 import org.example.statify.model.TeamModel;
 import org.example.statify.repository.TeamRepository;
+import org.example.statify.search.spec.TeamSpec;
 import org.example.statify.service.TeamService;
 import org.springframework.stereotype.Service;
 
@@ -69,5 +72,26 @@ public class TeamServiceImpl implements TeamService {
 
     DBTeam dbTeam = teamRepository.save(team);
     return new TeamModel(dbTeam);
+  }
+
+  @Override
+  public List<DBTeam> findAll(org.example.statify.search.TeamSearch search) {
+    TeamSpec spec = new TeamSpec(search);
+
+    return teamRepository.findAll(spec);
+  }
+
+  @Override
+  public DBTeam findById(Long id) {
+    return teamRepository.findById(id).orElseThrow(() -> new NotFoundException("Team not found."));
+  }
+
+  @Override
+  public DBTeam findByApiId(Integer apiId) {
+    if (apiId == null) {
+      throw new NotFoundException("Team not found.");
+    } else {
+      return teamRepository.findByApiId(apiId);
+    }
   }
 }

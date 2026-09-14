@@ -6,7 +6,7 @@ public interface SecondHalfGGProjection {
 
   Long getTeamId();
 
-  Long getTeamApiId();
+  Integer getTeamApiId();
 
   String getTeamName();
 

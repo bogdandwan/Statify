@@ -11,7 +11,7 @@ import lombok.Setter;
 public class TeamGGStatisticsModel {
 
   private Long teamId;
-  private Long teamApiId;
+  private Integer teamApiId;
   private String teamName;
   private Long ggCount;
   private Long matchesCount;

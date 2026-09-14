@@ -1,6 +1,9 @@
 package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.statify.api.ApiResponseModel;
@@ -18,6 +21,7 @@ import org.example.statify.mapper.ScoreMapper;
 import org.example.statify.model.FixtureModel;
 import org.example.statify.model.ScoreModel;
 import org.example.statify.repository.*;
+import org.example.statify.search.spec.FixtureSpec;
 import org.example.statify.service.FixtureService;
 import org.springframework.stereotype.Service;
 
@@ -177,5 +181,96 @@ public class FixtureServiceImpl implements FixtureService {
     DBScore score = scoreMapper.toEntity(scoreModel, fixture);
 
     scoreRepository.save(score);
+  }
+
+  @Override
+  public List<DBFixture> findAll(org.example.statify.search.FixtureSearch search) {
+    FixtureSpec spec = new FixtureSpec(search);
+
+    return fixtureRepository.findAll(spec);
+  }
+
+  @Override
+  public DBFixture findById(Long id) {
+    return fixtureRepository
+        .findById(id)
+        .orElseThrow(() -> new NotFoundException("Fixture not found."));
+  }
+
+  @Override
+  public DBFixture findByApiId(Integer apiId) {
+
+    if (apiId == null) {
+      throw new NotFoundException("Fixture not found.");
+    } else {
+      return fixtureRepository.findByApiId(apiId);
+    }
+  }
+
+  @Transactional
+  @Override
+  public void syncUpcomingFixtures() {
+
+    LocalDate today = LocalDate.now();
+
+    FixtureSearch search =
+        new FixtureSearch()
+            .setLeague(39)
+            .setSeason(2026)
+            .setFrom(today.toString())
+            .setTo(today.plusDays(7).toString());
+
+    ApiResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
+
+    for (FixtureResponseModel fixtureResponse : response.getResponse()) {
+
+      System.out.println(
+          fixtureResponse.getFixture().getId()
+              + " | "
+              + fixtureResponse.getFixture().getDate()
+              + " | "
+              + fixtureResponse.getFixture().getStatus());
+
+      saveOrUpdateFixture(fixtureResponse);
+    }
+  }
+
+  private void saveOrUpdateFixture(FixtureResponseModel fixtureResponse) {
+
+    Integer apiId = fixtureResponse.getFixture().getId();
+
+    DBFixture fixture = fixtureRepository.findByApiId(apiId);
+
+    if (fixture == null) {
+      fixture = new DBFixture();
+      fixture.setApiId(apiId);
+    }
+
+    fixture.setReferee(fixtureResponse.getFixture().getReferee());
+    fixture.setTimezone(fixtureResponse.getFixture().getTimezone());
+    fixture.setDate(OffsetDateTime.parse(fixtureResponse.getFixture().getDate()));
+    fixture.setTimestamp(fixtureResponse.getFixture().getTimestamp());
+
+    if (fixtureResponse.getFixture().getPeriods() != null) {
+      fixture.setFirstPeriod(fixtureResponse.getFixture().getPeriods().getFirst());
+
+      fixture.setSecondPeriod(fixtureResponse.getFixture().getPeriods().getSecond());
+    }
+
+    if (fixtureResponse.getFixture().getStatus() != null) {
+      fixture.setStatusLong(fixtureResponse.getFixture().getStatus().getLongName());
+
+      fixture.setStatusShort(fixtureResponse.getFixture().getStatus().getShortName());
+
+      fixture.setElapsed(fixtureResponse.getFixture().getStatus().getElapsed());
+
+      fixture.setExtra(fixtureResponse.getFixture().getStatus().getExtra());
+    }
+
+    System.out.println("SAVING FIXTURE: " + fixture.getApiId());
+
+    fixtureRepository.saveAndFlush(fixture);
+
+    System.out.println("FIXTURE SAVED: " + fixture.getApiId());
   }
 }

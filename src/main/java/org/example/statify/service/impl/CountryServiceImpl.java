@@ -1,6 +1,7 @@
 package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.CountrySearch;
@@ -10,6 +11,7 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.CountryMapper;
 import org.example.statify.model.CountryModel;
 import org.example.statify.repository.CountryRepository;
+import org.example.statify.search.spec.CountrySpec;
 import org.example.statify.service.CountryService;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +56,11 @@ public class CountryServiceImpl implements CountryService {
     DBCountry savedCountry = countryRepository.save(country);
 
     return new CountryModel(savedCountry);
+  }
+
+  @Override
+  public List<DBCountry> findAll(org.example.statify.search.CountrySearch search) {
+
+    return countryRepository.findAll(new CountrySpec(search));
   }
 }

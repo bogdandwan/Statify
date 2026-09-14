@@ -1,6 +1,7 @@
 package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.PlayerSearch;
@@ -11,6 +12,7 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.PlayerMapper;
 import org.example.statify.model.PlayerModel;
 import org.example.statify.repository.PlayerRepository;
+import org.example.statify.search.spec.PlayerSpec;
 import org.example.statify.service.PlayerService;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +79,11 @@ public class PlayerServiceImpl implements PlayerService {
 
     DBPlayer dbPlayer = playerRepository.save(player);
     return new PlayerModel(dbPlayer);
+  }
+
+  @Override
+  public List<DBPlayer> findAll(org.example.statify.search.PlayerSearch search) {
+
+    return playerRepository.findAll(new PlayerSpec(search));
   }
 }

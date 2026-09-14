@@ -1,14 +1,12 @@
 package org.example.statify.api;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter
 @Setter
 @Accessors(chain = true)
-@RequiredArgsConstructor
 public class FixtureSearch {
 
   private Integer id;

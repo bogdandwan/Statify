@@ -8,7 +8,7 @@ import org.example.statify.api.venue.VenueResponseModel;
 @Setter
 public class FixtureDetailResponseModel {
 
-  private Long id;
+  private Integer id;
   private String referee;
   private String timezone;
   private String date;

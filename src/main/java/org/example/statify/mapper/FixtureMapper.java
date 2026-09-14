@@ -19,8 +19,6 @@ public class FixtureMapper {
     model.setTimezone(response.getFixture().getTimezone());
     model.setDate(OffsetDateTime.parse(response.getFixture().getDate()));
     model.setTimestamp(response.getFixture().getTimestamp());
-    model.setFirstPeriod(response.getFixture().getPeriods().getFirst());
-    model.setSecondPeriod(response.getFixture().getPeriods().getSecond());
     model.setStatusLong(response.getFixture().getStatus().getLongName());
     model.setStatusShort(response.getFixture().getStatus().getShortName());
     model.setElapsed(response.getFixture().getStatus().getElapsed());
@@ -29,7 +27,12 @@ public class FixtureMapper {
     model.setSeasonYear(response.getLeague().getSeason());
     model.setHomeTeamId(response.getTeams().getHome().getId().intValue());
     model.setAwayTeamId(response.getTeams().getAway().getId().intValue());
-    if (response.getFixture().getVenue() != null) {
+    if (response.getFixture().getPeriods() != null) {
+      model.setFirstPeriod(response.getFixture().getPeriods().getFirst());
+      model.setSecondPeriod(response.getFixture().getPeriods().getSecond());
+    }
+    if (response.getFixture().getVenue() != null
+        && response.getFixture().getVenue().getId() != null) {
 
       VenueModel venue =
           new VenueModel()
@@ -38,6 +41,8 @@ public class FixtureMapper {
               .setCity(response.getFixture().getVenue().getCity());
 
       model.setVenue(venue);
+    } else {
+      model.setVenue(null);
     }
     model.setScore(response.getScore());
 

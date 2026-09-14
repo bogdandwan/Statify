@@ -1,7 +1,10 @@
 package org.example.statify.service;
 
+import java.util.List;
 import org.example.statify.api.venue.VenueResponseModel;
+import org.example.statify.entity.DBVenue;
 import org.example.statify.model.VenueModel;
+import org.example.statify.search.VenueSearch;
 
 public interface VenueService {
 
@@ -12,4 +15,6 @@ public interface VenueService {
   VenueModel saveFromApiVenue(VenueResponseModel venueResponseModel);
 
   VenueModel saveVenueById(Integer venueId);
+
+  List<DBVenue> findAll(VenueSearch search);
 }

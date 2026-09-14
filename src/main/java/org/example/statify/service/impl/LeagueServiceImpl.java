@@ -1,6 +1,7 @@
 package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.LeagueSearch;
@@ -8,11 +9,13 @@ import org.example.statify.api.league.LeagueResponseModel;
 import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.DBLeague;
+import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.LeagueMapper;
 import org.example.statify.model.LeagueModel;
 import org.example.statify.repository.CountryRepository;
 import org.example.statify.repository.LeagueRepository;
+import org.example.statify.search.spec.LeagueSpec;
 import org.example.statify.service.LeagueService;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +80,29 @@ public class LeagueServiceImpl implements LeagueService {
       throw new ValidationException("League by id:" + leagueId + " not found");
     }
     return saveFromApiLeague(responseModel.getResponse().get(0));
+  }
+
+  @Override
+  public List<DBLeague> findAll(org.example.statify.search.LeagueSearch search) {
+
+    return leagueRepository.findAll(new LeagueSpec(search));
+  }
+
+  @Override
+  public DBLeague findById(Long id) {
+
+    return leagueRepository
+        .findById(id)
+        .orElseThrow(() -> new NotFoundException("League not found."));
+  }
+
+  @Override
+  public DBLeague findByApiId(Integer apiId) {
+
+    if (apiId == null) {
+      throw new NotFoundException("League not found.");
+    } else {
+      return leagueRepository.findByApiId(apiId);
+    }
   }
 }

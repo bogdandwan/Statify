@@ -1,6 +1,7 @@
 package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.VenueSearch;
@@ -11,6 +12,7 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.VenueMapper;
 import org.example.statify.model.VenueModel;
 import org.example.statify.repository.VenueRepository;
+import org.example.statify.search.spec.VenueSpec;
 import org.example.statify.service.VenueService;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +66,11 @@ public class VenueServiceImpl implements VenueService {
       throw new ValidationException("Venue by id:" + venueId + " not found");
     }
     return saveFromApiVenue(responseModel.getResponse().get(0));
+  }
+
+  @Override
+  public List<DBVenue> findAll(org.example.statify.search.VenueSearch search) {
+
+    return venueRepository.findAll(new VenueSpec(search));
   }
 }
