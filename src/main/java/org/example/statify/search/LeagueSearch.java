@@ -7,9 +7,12 @@ import lombok.experimental.Accessors;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class CountrySearch {
+public class LeagueSearch {
 
   private Long id;
+  private Integer apiId;
   private String name;
-  private String code;
+  private String type;
+  private Long countryId;
+  private String countryName;
 }
