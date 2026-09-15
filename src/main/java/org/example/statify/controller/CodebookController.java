@@ -26,7 +26,8 @@ public class CodebookController {
   public void importFixtures(
       @RequestParam(value = "league", required = false) Integer leagueId,
       @RequestParam(value = "season", required = false) Integer seasonYear) {
-    fixtureService.importFixtures(leagueId, seasonYear);
+
+    fixtureService.importAllFixtures(leagueId, seasonYear);
   }
 
   @PostMapping("/leagues")

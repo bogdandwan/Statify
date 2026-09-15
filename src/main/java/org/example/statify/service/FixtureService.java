@@ -23,4 +23,6 @@ public interface FixtureService {
   void syncUpcomingFixtures();
 
   void calculateGgForDate(LocalDate date);
+
+  void importAllFixtures(Integer leagueId, Integer seasonYear);
 }
