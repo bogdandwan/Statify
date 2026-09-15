@@ -2,15 +2,17 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.statify.api.ApiCountrySearch;
 import org.example.statify.api.ApiResponseModel;
-import org.example.statify.api.CountrySearch;
 import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.CountryMapper;
 import org.example.statify.model.CountryModel;
 import org.example.statify.repository.CountryRepository;
+import org.example.statify.search.CountrySearch;
 import org.example.statify.search.spec.CountrySpec;
 import org.example.statify.service.CountryService;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class CountryServiceImpl implements CountryService {
   @Transactional
   public void importCountries(String name) {
 
-    CountrySearch search = new CountrySearch().setName(name);
+    ApiCountrySearch search = new ApiCountrySearch().setName(name);
     ApiResponseModel<CountryModel> response = footballApiClient.getCountries(search);
 
     /*for (CountryModel countryModel : response.getResponse()) {
@@ -37,7 +39,7 @@ public class CountryServiceImpl implements CountryService {
 
   public CountryModel saveCountryByName(String name) {
 
-    CountrySearch search = new CountrySearch().setName(name);
+    ApiCountrySearch search = new ApiCountrySearch().setName(name);
     ApiResponseModel<CountryModel> response = footballApiClient.getCountries(search);
 
     if (response == null || response.getResponse() == null || response.getResponse().size() != 1) {
@@ -59,8 +61,10 @@ public class CountryServiceImpl implements CountryService {
   }
 
   @Override
-  public List<DBCountry> findAll(org.example.statify.search.CountrySearch search) {
+  public List<CountryModel> findAll(CountrySearch search) {
 
-    return countryRepository.findAll(new CountrySpec(search));
+    List<DBCountry> dbCountries = countryRepository.findAll(new CountrySpec(search));
+
+    return dbCountries.stream().map(CountryModel::new).collect(Collectors.toList());
   }
 }

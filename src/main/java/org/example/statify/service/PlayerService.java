@@ -1,7 +1,6 @@
 package org.example.statify.service;
 
 import java.util.List;
-import org.example.statify.entity.DBPlayer;
 import org.example.statify.model.PlayerModel;
 import org.example.statify.search.PlayerSearch;
 
@@ -13,5 +12,5 @@ public interface PlayerService {
 
   PlayerModel savePlayerById(Integer playerId);
 
-  List<DBPlayer> findAll(PlayerSearch search);
+  List<PlayerModel> findAll(PlayerSearch search);
 }

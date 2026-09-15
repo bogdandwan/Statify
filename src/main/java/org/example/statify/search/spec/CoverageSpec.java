@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.entity.DBCoverage;
+import org.example.statify.entity.DBCoverage_;
+import org.example.statify.entity.DBLeague_;
+import org.example.statify.entity.DBSeason_;
 import org.example.statify.search.CoverageSearch;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,51 +25,56 @@ public class CoverageSpec implements Specification<DBCoverage> {
     final List<Predicate> predicates = new ArrayList<>();
 
     if (search.getId() != null) {
-      predicates.add(cb.equal(root.get("id"), search.getId()));
+      predicates.add(cb.equal(root.get(DBCoverage_.id), search.getId()));
     }
 
     if (search.getStandings() != null) {
-      predicates.add(cb.equal(root.get("standings"), search.getStandings()));
+      predicates.add(cb.equal(root.get(DBCoverage_.standings), search.getStandings()));
     }
 
     if (search.getPlayers() != null) {
-      predicates.add(cb.equal(root.get("players"), search.getPlayers()));
+      predicates.add(cb.equal(root.get(DBCoverage_.players), search.getPlayers()));
     }
 
     if (search.getTopScorers() != null) {
-      predicates.add(cb.equal(root.get("topScorers"), search.getTopScorers()));
+      predicates.add(cb.equal(root.get(DBCoverage_.topScorers), search.getTopScorers()));
     }
 
     if (search.getTopAssists() != null) {
-      predicates.add(cb.equal(root.get("topAssists"), search.getTopAssists()));
+      predicates.add(cb.equal(root.get(DBCoverage_.topAssists), search.getTopAssists()));
     }
 
     if (search.getTopCards() != null) {
-      predicates.add(cb.equal(root.get("topCards"), search.getTopCards()));
+      predicates.add(cb.equal(root.get(DBCoverage_.topCards), search.getTopCards()));
     }
 
     if (search.getInjuries() != null) {
-      predicates.add(cb.equal(root.get("injuries"), search.getInjuries()));
+      predicates.add(cb.equal(root.get(DBCoverage_.injuries), search.getInjuries()));
     }
 
     if (search.getPredictions() != null) {
-      predicates.add(cb.equal(root.get("predictions"), search.getPredictions()));
+      predicates.add(cb.equal(root.get(DBCoverage_.predictions), search.getPredictions()));
     }
 
     if (search.getOdds() != null) {
-      predicates.add(cb.equal(root.get("odds"), search.getOdds()));
+      predicates.add(cb.equal(root.get(DBCoverage_.odds), search.getOdds()));
     }
 
     if (search.getSeasonId() != null) {
-      predicates.add(cb.equal(root.get("season").get("id"), search.getSeasonId()));
+      predicates.add(
+          cb.equal(root.get(DBCoverage_.season).get(DBSeason_.id), search.getSeasonId()));
     }
 
     if (search.getSeasonYear() != null) {
-      predicates.add(cb.equal(root.get("season").get("year"), search.getSeasonYear()));
+      predicates.add(
+          cb.equal(root.get(DBCoverage_.season).get(DBSeason_.year), search.getSeasonYear()));
     }
 
     if (search.getLeagueId() != null) {
-      predicates.add(cb.equal(root.get("season").get("league").get("id"), search.getLeagueId()));
+      predicates.add(
+          cb.equal(
+              root.get(DBCoverage_.season).get(DBSeason_.league).get(DBLeague_.id),
+              search.getLeagueId()));
     }
 
     return cb.and(predicates.toArray(new Predicate[0]));

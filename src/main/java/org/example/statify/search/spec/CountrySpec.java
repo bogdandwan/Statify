@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.entity.DBCountry;
+import org.example.statify.entity.DBCountry_;
 import org.example.statify.search.CountrySearch;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,16 +23,16 @@ public class CountrySpec implements Specification<DBCountry> {
     final List<Predicate> predicates = new ArrayList<>();
 
     if (search.getId() != null) {
-      predicates.add(cb.equal(root.get("id"), search.getId()));
+      predicates.add(cb.equal(root.get(DBCountry_.id), search.getId()));
     }
 
     if (search.getName() != null) {
       predicates.add(
-          cb.like(cb.lower(root.get("name")), "%" + search.getName().toLowerCase() + "%"));
+          cb.like(cb.lower(root.get(DBCountry_.name)), "%" + search.getName().toLowerCase() + "%"));
     }
 
     if (search.getCode() != null) {
-      predicates.add(cb.equal(root.get("code"), search.getCode()));
+      predicates.add(cb.equal(root.get(DBCountry_.code), search.getCode()));
     }
 
     return cb.and(predicates.toArray(new Predicate[0]));

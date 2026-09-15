@@ -2,7 +2,6 @@ package org.example.statify.service;
 
 import java.util.List;
 import org.example.statify.api.team.TeamApiResponseModel;
-import org.example.statify.entity.DBTeam;
 import org.example.statify.model.TeamModel;
 import org.example.statify.search.TeamSearch;
 
@@ -16,9 +15,9 @@ public interface TeamService {
 
   TeamModel saveFromApiTeam(TeamApiResponseModel teamApiResponseModel);
 
-  List<DBTeam> findAll(TeamSearch search);
+  List<TeamModel> findAll(TeamSearch search);
 
-  DBTeam findById(Long id);
+  TeamModel findById(Long id);
 
-  DBTeam findByApiId(Integer apiId);
+  TeamModel findByApiId(Integer apiId);
 }

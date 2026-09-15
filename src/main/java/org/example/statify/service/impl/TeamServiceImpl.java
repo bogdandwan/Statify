@@ -2,9 +2,10 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
-import org.example.statify.api.TeamSearch;
+import org.example.statify.api.ApiTeamSearch;
 import org.example.statify.api.team.TeamApiResponseModel;
 import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.entity.DBTeam;
@@ -13,6 +14,7 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.TeamMapper;
 import org.example.statify.model.TeamModel;
 import org.example.statify.repository.TeamRepository;
+import org.example.statify.search.TeamSearch;
 import org.example.statify.search.spec.TeamSpec;
 import org.example.statify.service.TeamService;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,7 @@ public class TeamServiceImpl implements TeamService {
   @Override
   public void importTeams(String country) {
 
-    final TeamSearch search = new TeamSearch().setCountry(country);
+    final ApiTeamSearch search = new ApiTeamSearch().setCountry(country);
 
     ApiResponseModel<TeamApiResponseModel> response = footballApiClient.getTeamsByCountry(search);
 
@@ -50,7 +52,7 @@ public class TeamServiceImpl implements TeamService {
 
   @Override
   public TeamModel saveTeamById(Integer teamId) {
-    final TeamSearch search = new TeamSearch().setId(teamId);
+    final ApiTeamSearch search = new ApiTeamSearch().setId(teamId);
     final ApiResponseModel<TeamApiResponseModel> responseModel =
         footballApiClient.getTeamsByCountry(search);
     if (responseModel == null
@@ -75,23 +77,34 @@ public class TeamServiceImpl implements TeamService {
   }
 
   @Override
-  public List<DBTeam> findAll(org.example.statify.search.TeamSearch search) {
-    TeamSpec spec = new TeamSpec(search);
+  public List<TeamModel> findAll(TeamSearch search) {
 
-    return teamRepository.findAll(spec);
+    final List<DBTeam> dbTeams = teamRepository.findAll(new TeamSpec(search));
+
+    return dbTeams.stream().map(TeamModel::new).collect(Collectors.toList());
   }
 
   @Override
-  public DBTeam findById(Long id) {
-    return teamRepository.findById(id).orElseThrow(() -> new NotFoundException("Team not found."));
+  public TeamModel findById(Long id) {
+
+    if (id == null) {
+      throw new NotFoundException("Team id cannot be null");
+    }
+    DBTeam dbTeam =
+        teamRepository
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException("Team not found by id: " + id));
+
+    return new TeamModel(dbTeam);
   }
 
   @Override
-  public DBTeam findByApiId(Integer apiId) {
+  public TeamModel findByApiId(Integer apiId) {
     if (apiId == null) {
       throw new NotFoundException("Team not found.");
     } else {
-      return teamRepository.findByApiId(apiId);
+      DBTeam dbTeam = teamRepository.findByApiId(apiId);
+      return new TeamModel(dbTeam);
     }
   }
 }

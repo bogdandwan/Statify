@@ -2,9 +2,10 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.api.ApiResponseModel;
-import org.example.statify.api.VenueSearch;
+import org.example.statify.api.ApiVenueSearch;
 import org.example.statify.api.venue.VenueResponseModel;
 import org.example.statify.client.FootballApiClientService;
 import org.example.statify.entity.DBVenue;
@@ -12,6 +13,7 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.VenueMapper;
 import org.example.statify.model.VenueModel;
 import org.example.statify.repository.VenueRepository;
+import org.example.statify.search.VenueSearch;
 import org.example.statify.search.spec.VenueSpec;
 import org.example.statify.service.VenueService;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class VenueServiceImpl implements VenueService {
   @Override
   public void importVenues(String country) {
 
-    final VenueSearch search = new VenueSearch().setCountry(country);
+    final ApiVenueSearch search = new ApiVenueSearch().setCountry(country);
     ApiResponseModel<VenueResponseModel> response = footballApiClient.getVenues(search);
 
     /*for (VenueResponseModel responseModel : response.getResponse()) {
@@ -58,7 +60,7 @@ public class VenueServiceImpl implements VenueService {
   }
 
   public VenueModel saveVenueById(Integer venueId) {
-    final VenueSearch search = new VenueSearch().setId(venueId);
+    final ApiVenueSearch search = new ApiVenueSearch().setId(venueId);
     final ApiResponseModel<VenueResponseModel> responseModel = footballApiClient.getVenues(search);
     if (responseModel == null
         || responseModel.getResponse() == null
@@ -69,8 +71,10 @@ public class VenueServiceImpl implements VenueService {
   }
 
   @Override
-  public List<DBVenue> findAll(org.example.statify.search.VenueSearch search) {
+  public List<VenueModel> findAll(VenueSearch search) {
 
-    return venueRepository.findAll(new VenueSpec(search));
+    final List<DBVenue> dbVenues = venueRepository.findAll(new VenueSpec(search));
+
+    return dbVenues.stream().map(VenueModel::new).collect(Collectors.toList());
   }
 }

@@ -2,9 +2,10 @@ package org.example.statify.service.impl;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.statify.api.ApiPlayerSearch;
 import org.example.statify.api.ApiResponseModel;
-import org.example.statify.api.PlayerSearch;
 import org.example.statify.api.player.PlayerResponseModel;
 import org.example.statify.client.impl.FootballApiClientImpl;
 import org.example.statify.entity.DBPlayer;
@@ -12,6 +13,7 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.PlayerMapper;
 import org.example.statify.model.PlayerModel;
 import org.example.statify.repository.PlayerRepository;
+import org.example.statify.search.PlayerSearch;
 import org.example.statify.search.spec.PlayerSpec;
 import org.example.statify.service.PlayerService;
 import org.springframework.stereotype.Service;
@@ -31,8 +33,8 @@ public class PlayerServiceImpl implements PlayerService {
     int totalPages;
 
     do {
-      final PlayerSearch search =
-          new PlayerSearch().setLeague(leagueId).setSeason(seasonYear).setPage(page);
+      final ApiPlayerSearch search =
+          new ApiPlayerSearch().setLeague(leagueId).setSeason(seasonYear).setPage(page);
       ApiResponseModel<PlayerResponseModel> response = footballApiClient.getPlayers(search);
 
       for (PlayerResponseModel responseModel : response.getResponse()) {
@@ -59,7 +61,7 @@ public class PlayerServiceImpl implements PlayerService {
   }
 
   public PlayerModel savePlayerById(Integer playerId) {
-    final PlayerSearch search = new PlayerSearch().setId(playerId);
+    final ApiPlayerSearch search = new ApiPlayerSearch().setId(playerId);
     final ApiResponseModel<PlayerResponseModel> responseModel =
         footballApiClient.getPlayers(search);
     if (responseModel == null
@@ -82,8 +84,10 @@ public class PlayerServiceImpl implements PlayerService {
   }
 
   @Override
-  public List<DBPlayer> findAll(org.example.statify.search.PlayerSearch search) {
+  public List<PlayerModel> findAll(PlayerSearch search) {
 
-    return playerRepository.findAll(new PlayerSpec(search));
+    final List<DBPlayer> dbPlayers = playerRepository.findAll(new PlayerSpec(search));
+
+    return dbPlayers.stream().map(PlayerModel::new).collect(Collectors.toList());
   }
 }

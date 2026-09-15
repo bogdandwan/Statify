@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FixtureScheduler {
+public class UpcomingFixtureScheduler {
 
   private final FixtureService fixtureService;
   private final SeasonRepository seasonRepository;
 
-  @Scheduled(cron = "0 */30 * * * *")
+  @Scheduled(cron = "${scheduler.fixture.cron}")
   public void updateFixtures() {
 
     System.out.println("FIXTURE SCHEDULER STARTED");

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.entity.DBTeam;
+import org.example.statify.entity.DBTeam_;
 import org.example.statify.search.TeamSearch;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,40 +23,41 @@ public class TeamSpec implements Specification<DBTeam> {
     final List<Predicate> predicates = new ArrayList<>();
 
     if (search.getId() != null) {
-      predicates.add(cb.equal(root.get("id"), search.getId()));
+      predicates.add(cb.equal(root.get(DBTeam_.id), search.getId()));
     }
 
     if (search.getApiId() != null) {
-      predicates.add(cb.equal(root.get("apiId"), search.getApiId()));
+      predicates.add(cb.equal(root.get(DBTeam_.apiId), search.getApiId()));
     }
 
     if (search.getName() != null) {
       predicates.add(
-          cb.like(cb.lower(root.get("name")), "%" + search.getName().toLowerCase() + "%"));
+          cb.like(cb.lower(root.get(DBTeam_.name)), "%" + search.getName().toLowerCase() + "%"));
     }
 
     if (search.getCode() != null) {
-      predicates.add(cb.equal(root.get("code"), search.getCode()));
+      predicates.add(cb.equal(root.get(DBTeam_.code), search.getCode()));
     }
 
     if (search.getCountry() != null) {
-      predicates.add(cb.equal(cb.lower(root.get("country")), search.getCountry().toLowerCase()));
+      predicates.add(
+          cb.equal(cb.lower(root.get(DBTeam_.country)), search.getCountry().toLowerCase()));
     }
 
     if (search.getFounded() != null) {
-      predicates.add(cb.equal(root.get("founded"), search.getFounded()));
+      predicates.add(cb.equal(root.get(DBTeam_.founded), search.getFounded()));
     }
 
     if (search.getFoundedFrom() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(root.get("founded"), search.getFoundedFrom()));
+      predicates.add(cb.greaterThanOrEqualTo(root.get(DBTeam_.founded), search.getFoundedFrom()));
     }
 
     if (search.getFoundedTo() != null) {
-      predicates.add(cb.lessThanOrEqualTo(root.get("founded"), search.getFoundedTo()));
+      predicates.add(cb.lessThanOrEqualTo(root.get(DBTeam_.founded), search.getFoundedTo()));
     }
 
     if (search.getNational() != null) {
-      predicates.add(cb.equal(root.get("national"), search.getNational()));
+      predicates.add(cb.equal(root.get(DBTeam_.national), search.getNational()));
     }
 
     return cb.and(predicates.toArray(new Predicate[0]));

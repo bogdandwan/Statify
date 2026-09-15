@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.statify.entity.DBPlayer;
+import org.example.statify.entity.DBPlayer_;
 import org.example.statify.search.PlayerSearch;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,59 +23,67 @@ public class PlayerSpec implements Specification<DBPlayer> {
     final List<Predicate> predicates = new ArrayList<>();
 
     if (search.getId() != null) {
-      predicates.add(cb.equal(root.get("id"), search.getId()));
+      predicates.add(cb.equal(root.get(DBPlayer_.id), search.getId()));
     }
 
     if (search.getApiId() != null) {
-      predicates.add(cb.equal(root.get("apiId"), search.getApiId()));
+      predicates.add(cb.equal(root.get(DBPlayer_.apiId), search.getApiId()));
     }
 
     if (search.getName() != null) {
       predicates.add(
-          cb.like(cb.lower(root.get("name")), "%" + search.getName().toLowerCase() + "%"));
+          cb.like(cb.lower(root.get(DBPlayer_.name)), "%" + search.getName().toLowerCase() + "%"));
     }
 
     if (search.getFirstname() != null) {
       predicates.add(
           cb.like(
-              cb.lower(root.get("firstname")), "%" + search.getFirstname().toLowerCase() + "%"));
+              cb.lower(root.get(DBPlayer_.firstname)),
+              "%" + search.getFirstname().toLowerCase() + "%"));
     }
 
     if (search.getLastname() != null) {
       predicates.add(
-          cb.like(cb.lower(root.get("lastname")), "%" + search.getLastname().toLowerCase() + "%"));
+          cb.like(
+              cb.lower(root.get(DBPlayer_.lastname)),
+              "%" + search.getLastname().toLowerCase() + "%"));
     }
 
     if (search.getBirthDateFrom() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(root.get("birthDate"), search.getBirthDateFrom()));
+      predicates.add(
+          cb.greaterThanOrEqualTo(root.get(DBPlayer_.birthDate), search.getBirthDateFrom()));
     }
 
     if (search.getBirthDateTo() != null) {
-      predicates.add(cb.lessThanOrEqualTo(root.get("birthDate"), search.getBirthDateTo()));
+      predicates.add(cb.lessThanOrEqualTo(root.get(DBPlayer_.birthDate), search.getBirthDateTo()));
     }
 
     if (search.getBirthPlace() != null) {
       predicates.add(
           cb.like(
-              cb.lower(root.get("birthPlace")), "%" + search.getBirthPlace().toLowerCase() + "%"));
+              cb.lower(root.get(DBPlayer_.birthPlace)),
+              "%" + search.getBirthPlace().toLowerCase() + "%"));
     }
 
     if (search.getBirthCountry() != null) {
       predicates.add(
-          cb.equal(cb.lower(root.get("birthCountry")), search.getBirthCountry().toLowerCase()));
+          cb.equal(
+              cb.lower(root.get(DBPlayer_.birthCountry)), search.getBirthCountry().toLowerCase()));
     }
 
     if (search.getNationality() != null) {
       predicates.add(
-          cb.equal(cb.lower(root.get("nationality")), search.getNationality().toLowerCase()));
+          cb.equal(
+              cb.lower(root.get(DBPlayer_.nationality)), search.getNationality().toLowerCase()));
     }
 
     if (search.getPosition() != null) {
-      predicates.add(cb.equal(cb.lower(root.get("position")), search.getPosition().toLowerCase()));
+      predicates.add(
+          cb.equal(cb.lower(root.get(DBPlayer_.position)), search.getPosition().toLowerCase()));
     }
 
     if (search.getNumber() != null) {
-      predicates.add(cb.equal(root.get("number"), search.getNumber()));
+      predicates.add(cb.equal(root.get(DBPlayer_.number), search.getNumber()));
     }
 
     return cb.and(predicates.toArray(new Predicate[0]));

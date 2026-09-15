@@ -7,7 +7,9 @@ import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.example.statify.entity.DBLeague_;
 import org.example.statify.entity.DBSeason;
+import org.example.statify.entity.DBSeason_;
 import org.example.statify.search.SeasonSearch;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,47 +24,48 @@ public class SeasonSpec implements Specification<DBSeason> {
     final List<Predicate> predicates = new ArrayList<>();
 
     if (search.getId() != null) {
-      predicates.add(cb.equal(root.get("id"), search.getId()));
+      predicates.add(cb.equal(root.get(DBSeason_.id), search.getId()));
     }
 
     if (search.getYear() != null) {
-      predicates.add(cb.equal(root.get("year"), search.getYear()));
+      predicates.add(cb.equal(root.get(DBSeason_.year), search.getYear()));
     }
 
     if (search.getYearFrom() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(root.get("year"), search.getYearFrom()));
+      predicates.add(cb.greaterThanOrEqualTo(root.get(DBSeason_.year), search.getYearFrom()));
     }
 
     if (search.getYearTo() != null) {
-      predicates.add(cb.lessThanOrEqualTo(root.get("year"), search.getYearTo()));
+      predicates.add(cb.lessThanOrEqualTo(root.get(DBSeason_.year), search.getYearTo()));
     }
 
     if (search.getStartFrom() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(root.get("start"), search.getStartFrom()));
+      predicates.add(cb.greaterThanOrEqualTo(root.get(DBSeason_.start), search.getStartFrom()));
     }
 
     if (search.getStartTo() != null) {
-      predicates.add(cb.lessThanOrEqualTo(root.get("start"), search.getStartTo()));
+      predicates.add(cb.lessThanOrEqualTo(root.get(DBSeason_.start), search.getStartTo()));
     }
 
     if (search.getEndFrom() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(root.get("end"), search.getEndFrom()));
+      predicates.add(cb.greaterThanOrEqualTo(root.get(DBSeason_.end), search.getEndFrom()));
     }
 
     if (search.getEndTo() != null) {
-      predicates.add(cb.lessThanOrEqualTo(root.get("end"), search.getEndTo()));
+      predicates.add(cb.lessThanOrEqualTo(root.get(DBSeason_.end), search.getEndTo()));
     }
 
     if (search.getCurrent() != null) {
-      predicates.add(cb.equal(root.get("current"), search.getCurrent()));
+      predicates.add(cb.equal(root.get(DBSeason_.current), search.getCurrent()));
     }
 
     if (search.getLeagueId() != null) {
-      predicates.add(cb.equal(root.get("league").get("id"), search.getLeagueId()));
+      predicates.add(cb.equal(root.get(DBSeason_.league).get(DBLeague_.id), search.getLeagueId()));
     }
 
     if (search.getLeagueApiId() != null) {
-      predicates.add(cb.equal(root.get("league").get("apiId"), search.getLeagueApiId()));
+      predicates.add(
+          cb.equal(root.get(DBSeason_.league).get(DBLeague_.apiId), search.getLeagueApiId()));
     }
 
     return cb.and(predicates.toArray(new Predicate[0]));

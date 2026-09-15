@@ -11,4 +11,6 @@ public interface SeasonRepository
   DBSeason findByLeagueApiIdAndYear(Integer leagueApiId, Integer year);
 
   List<DBSeason> findAllByCurrentTrue();
+
+  DBSeason findByLeague_IdAndYear(Long leagueId, Integer year);
 }

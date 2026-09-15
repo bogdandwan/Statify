@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class TeamSearch {
+public class ApiTeamSearch {
 
   private Integer id;
   private String name;

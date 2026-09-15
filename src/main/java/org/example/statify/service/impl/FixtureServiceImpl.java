@@ -3,11 +3,14 @@ package org.example.statify.service.impl;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.statify.api.ApiFixtureSearch;
 import org.example.statify.api.ApiResponseModel;
-import org.example.statify.api.FixtureSearch;
 import org.example.statify.api.fixture.FixtureResponseModel;
 import org.example.statify.api.score.ScoreDetailResponseModel;
 import org.example.statify.api.score.ScoreResponseModel;
@@ -21,8 +24,10 @@ import org.example.statify.mapper.ScoreMapper;
 import org.example.statify.model.FixtureModel;
 import org.example.statify.model.ScoreModel;
 import org.example.statify.repository.*;
+import org.example.statify.search.FixtureSearch;
 import org.example.statify.search.spec.FixtureSpec;
 import org.example.statify.service.FixtureService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,13 +48,17 @@ public class FixtureServiceImpl implements FixtureService {
   private final VenueRepository venueRepository;
   private final TeamRepository teamRepository;
 
+  @Value("${scheduler.zone}")
+  private String schedulerZone;
+
   @Transactional
   @Override
   public void importFixtures(Integer leagueId, Integer seasonYear) {
 
     log.info("Importing fixtures for league {} and season {}", leagueId, seasonYear);
 
-    final FixtureSearch search = new FixtureSearch().setLeague(leagueId).setSeason(seasonYear);
+    final ApiFixtureSearch search =
+        new ApiFixtureSearch().setLeague(leagueId).setSeason(seasonYear);
     final ApiResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
 
     log.info("TOTAL FIXTURES FROM API = {}", response.getResponse().size());
@@ -126,7 +135,7 @@ public class FixtureServiceImpl implements FixtureService {
 
   public FixtureModel saveFixtureById(Integer fixtureId) {
 
-    final FixtureSearch search = new FixtureSearch().setId(fixtureId);
+    final ApiFixtureSearch search = new ApiFixtureSearch().setId(fixtureId);
     final ApiResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
 
     if (response == null || response.getResponse() == null || response.getResponse().size() != 1) {
@@ -184,26 +193,33 @@ public class FixtureServiceImpl implements FixtureService {
   }
 
   @Override
-  public List<DBFixture> findAll(org.example.statify.search.FixtureSearch search) {
-    FixtureSpec spec = new FixtureSpec(search);
+  public List<FixtureModel> findAll(FixtureSearch search) {
+    final List<DBFixture> dbFixtures = fixtureRepository.findAll(new FixtureSpec(search));
 
-    return fixtureRepository.findAll(spec);
+    return dbFixtures.stream().map(FixtureModel::new).collect(Collectors.toList());
   }
 
   @Override
-  public DBFixture findById(Long id) {
-    return fixtureRepository
-        .findById(id)
-        .orElseThrow(() -> new NotFoundException("Fixture not found."));
+  public FixtureModel findById(Long id) {
+    if (id == null) {
+      throw new NotFoundException("Fixture id cannot be null");
+    }
+    DBFixture dbFixture =
+        fixtureRepository
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException("Fixture not found by id: " + id));
+
+    return new FixtureModel(dbFixture);
   }
 
   @Override
-  public DBFixture findByApiId(Integer apiId) {
+  public FixtureModel findByApiId(Integer apiId) {
 
     if (apiId == null) {
       throw new NotFoundException("Fixture not found.");
     } else {
-      return fixtureRepository.findByApiId(apiId);
+      DBFixture dbFixture = fixtureRepository.findByApiId(apiId);
+      return new FixtureModel(dbFixture);
     }
   }
 
@@ -213,8 +229,8 @@ public class FixtureServiceImpl implements FixtureService {
 
     LocalDate today = LocalDate.now();
 
-    FixtureSearch search =
-        new FixtureSearch()
+    ApiFixtureSearch search =
+        new ApiFixtureSearch()
             .setLeague(39)
             .setSeason(2026)
             .setFrom(today.toString())
@@ -267,10 +283,143 @@ public class FixtureServiceImpl implements FixtureService {
       fixture.setExtra(fixtureResponse.getFixture().getStatus().getExtra());
     }
 
+    DBLeague league = leagueRepository.findByApiId(fixtureResponse.getLeague().getId());
+
+    if (league == null) {
+      throw new IllegalStateException(
+          "League not found for apiId: " + fixtureResponse.getLeague().getId());
+    }
+
+    fixture.setLeague(league);
+
+    DBSeason season =
+        seasonRepository.findByLeague_IdAndYear(
+            league.getId(), fixtureResponse.getLeague().getSeason());
+
+    if (season == null) {
+      throw new IllegalStateException(
+          "Season not found. League: "
+              + league.getName()
+              + ", year: "
+              + fixtureResponse.getLeague().getSeason());
+    }
+
+    fixture.setSeason(season);
+
+    DBTeam homeTeam = teamRepository.findByApiId(fixtureResponse.getTeams().getHome().getId().intValue());
+
+    if (homeTeam == null) {
+      throw new IllegalStateException(
+          "Home team not found for apiId: " + fixtureResponse.getTeams().getHome().getId());
+    }
+
+    fixture.setHomeTeam(homeTeam);
+
+    DBTeam awayTeam = teamRepository.findByApiId(fixtureResponse.getTeams().getAway().getId().intValue());
+
+    if (awayTeam == null) {
+      throw new IllegalStateException(
+          "Away team not found for apiId: " + fixtureResponse.getTeams().getAway().getId());
+    }
+
+    fixture.setAwayTeam(awayTeam);
+
+
+    if (fixtureResponse.getFixture().getVenue() != null
+        && fixtureResponse.getFixture().getVenue().getId() != null) {
+
+      DBVenue venue = venueRepository.findByApiId(fixtureResponse.getFixture().getVenue().getId().intValue());
+
+      if (venue == null) {
+        throw new IllegalStateException(
+            "Venue not found for apiId: " + fixtureResponse.getFixture().getVenue().getId());
+      }
+
+      fixture.setVenue(venue);
+    }
+
     System.out.println("SAVING FIXTURE: " + fixture.getApiId());
 
     fixtureRepository.saveAndFlush(fixture);
 
     System.out.println("FIXTURE SAVED: " + fixture.getApiId());
+  }
+
+  @Override
+  public void calculateGgForDate(LocalDate date) {
+
+    ZoneId zoneId = ZoneId.of(schedulerZone);
+
+    OffsetDateTime from = date.atStartOfDay(zoneId).toOffsetDateTime();
+
+    OffsetDateTime to = date.plusDays(1).atStartOfDay(zoneId).toOffsetDateTime();
+
+    List<DBFixture> fixtures =
+        fixtureRepository.findByDateGreaterThanEqualAndDateLessThanAndStatusShortIn(
+            from, to, Set.of("FT", "AET", "PEN"));
+
+    System.out.println("GG CALCULATION FOR " + date + " | FIXTURES FOUND: " + fixtures.size());
+
+    for (DBFixture fixture : fixtures) {
+
+      calculateGg(fixture);
+    }
+  }
+
+  private void calculateGg(DBFixture fixture) {
+
+    DBScore firstHalf =
+        fixture.getScores().stream()
+            .filter(score -> score.getType() == ScoreType.FIRST_HALF)
+            .findFirst()
+            .orElse(null);
+
+    DBScore secondHalf =
+        fixture.getScores().stream()
+            .filter(score -> score.getType() == ScoreType.SECOND_HALF)
+            .findFirst()
+            .orElse(null);
+
+    if (firstHalf == null || secondHalf == null) {
+
+      System.out.println("GG SKIPPED - SCORES MISSING | fixtureApiId=" + fixture.getApiId());
+
+      return;
+    }
+
+    if (firstHalf.getHome() == null
+        || firstHalf.getAway() == null
+        || secondHalf.getHome() == null
+        || secondHalf.getAway() == null) {
+
+      System.out.println("GG SKIPPED - SCORE VALUES NULL | fixtureApiId=" + fixture.getApiId());
+
+      return;
+    }
+
+    boolean firstHalfGg = firstHalf.getHome() > 0 && firstHalf.getAway() > 0;
+
+    boolean secondHalfGg = secondHalf.getHome() > 0 && secondHalf.getAway() > 0;
+
+    fixture.setFirstHalfGg(firstHalfGg);
+    fixture.setSecondHalfGg(secondHalfGg);
+
+    fixtureRepository.save(fixture);
+
+    System.out.println(
+        "fixtureApiId="
+            + fixture.getApiId()
+            + " | FIRST HALF="
+            + firstHalf.getHome()
+            + ":"
+            + firstHalf.getAway()
+            + " | 1GG="
+            + firstHalfGg
+            + " | SECOND HALF="
+            + secondHalf.getHome()
+            + ":"
+            + secondHalf.getAway()
+            + " | 2GG="
+            + secondHalfGg);
   }
 }

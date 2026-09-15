@@ -39,7 +39,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
   }
 
   @Override
-  public ApiResponseModel<LeagueResponseModel> getLeagues(LeagueSearch search) {
+  public ApiResponseModel<LeagueResponseModel> getLeagues(ApiLeagueSearch search) {
     return webClient
         .get()
         .uri(
@@ -63,7 +63,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
   }
 
   @Override
-  public ApiResponseModel<VenueResponseModel> getVenues(VenueSearch search) {
+  public ApiResponseModel<VenueResponseModel> getVenues(ApiVenueSearch search) {
     return webClient
         .get()
         .uri(
@@ -81,7 +81,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
         .block();
   }
 
-  public ApiResponseModel<CountryModel> getCountries(CountrySearch search) {
+  public ApiResponseModel<CountryModel> getCountries(ApiCountrySearch search) {
 
     return webClient
         .get()
@@ -98,7 +98,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
         .block();
   }
 
-  public ApiResponseModel<FixtureResponseModel> getFixtures(FixtureSearch search) {
+  public ApiResponseModel<FixtureResponseModel> getFixtures(ApiFixtureSearch search) {
 
     return webClient
         .get()
@@ -123,7 +123,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
         .block();
   }
 
-  public ApiResponseModel<TeamApiResponseModel> getTeamsByCountry(TeamSearch search) {
+  public ApiResponseModel<TeamApiResponseModel> getTeamsByCountry(ApiTeamSearch search) {
 
     return webClient
         .get()
@@ -144,7 +144,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
         .block();
   }
 
-  public ApiResponseModel<PlayerResponseModel> getPlayers(PlayerSearch search) {
+  public ApiResponseModel<PlayerResponseModel> getPlayers(ApiPlayerSearch search) {
 
     return webClient
         .get()

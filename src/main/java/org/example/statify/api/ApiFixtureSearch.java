@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class FixtureSearch {
+public class ApiFixtureSearch {
 
   private Integer id;
 

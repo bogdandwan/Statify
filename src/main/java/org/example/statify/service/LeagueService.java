@@ -1,7 +1,6 @@
 package org.example.statify.service;
 
 import java.util.List;
-import org.example.statify.entity.DBLeague;
 import org.example.statify.model.LeagueModel;
 import org.example.statify.search.LeagueSearch;
 
@@ -13,9 +12,9 @@ public interface LeagueService {
 
   LeagueModel getLeagueByApiId(Integer leagueId);
 
-  List<DBLeague> findAll(LeagueSearch search);
+  List<LeagueModel> findAll(LeagueSearch search);
 
-  DBLeague findById(Long id);
+  LeagueModel findById(Long id);
 
-  DBLeague findByApiId(Integer apiId);
+  LeagueModel findByApiId(Integer apiId);
 }

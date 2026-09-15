@@ -9,9 +9,10 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class CountrySearch {
-
+public class ApiVenueSearch {
+  private Integer id;
   private String name;
-  private String code;
+  private String city;
+  private String country;
   private String fullText;
 }

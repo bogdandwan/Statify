@@ -13,7 +13,7 @@ public class DBScore {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "home")
   private Integer home;

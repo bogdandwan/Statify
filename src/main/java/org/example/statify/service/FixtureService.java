@@ -1,8 +1,8 @@
 package org.example.statify.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.example.statify.api.fixture.FixtureResponseModel;
-import org.example.statify.entity.DBFixture;
 import org.example.statify.model.FixtureModel;
 import org.example.statify.search.FixtureSearch;
 
@@ -14,11 +14,13 @@ public interface FixtureService {
 
   FixtureModel saveFixtureById(Integer fixtureId);
 
-  List<DBFixture> findAll(FixtureSearch search);
+  List<FixtureModel> findAll(FixtureSearch search);
 
-  DBFixture findById(Long id);
+  FixtureModel findById(Long id);
 
-  DBFixture findByApiId(Integer apiId);
+  FixtureModel findByApiId(Integer apiId);
 
   void syncUpcomingFixtures();
+
+  void calculateGgForDate(LocalDate date);
 }

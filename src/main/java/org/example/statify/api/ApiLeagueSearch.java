@@ -9,12 +9,16 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class PlayerSearch {
+public class ApiLeagueSearch {
 
   private Integer id;
+  private String name;
+  private String country;
+  private String code;
+  private String season;
   private Integer team;
-  private Integer league;
-  private Integer season;
+  private String type;
+  private String current;
   private String fullText;
-  private Integer page;
+  private String last;
 }

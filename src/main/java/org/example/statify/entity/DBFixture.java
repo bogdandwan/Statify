@@ -30,6 +30,12 @@ public class DBFixture {
   private Integer elapsed;
   private Integer extra;
 
+  @Column(name = "first_half_gg")
+  private Boolean firstHalfGg;
+
+  @Column(name = "second_half_gg")
+  private Boolean secondHalfGg;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id")
   private DBLeague league;
