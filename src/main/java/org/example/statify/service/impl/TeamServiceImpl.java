@@ -8,11 +8,13 @@ import org.example.statify.api.ApiResponseModel;
 import org.example.statify.api.ApiTeamSearch;
 import org.example.statify.api.team.TeamApiResponseModel;
 import org.example.statify.client.impl.FootballApiClientImpl;
+import org.example.statify.entity.DBCountry;
 import org.example.statify.entity.DBTeam;
 import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.TeamMapper;
 import org.example.statify.model.TeamModel;
+import org.example.statify.repository.CountryRepository;
 import org.example.statify.repository.TeamRepository;
 import org.example.statify.search.TeamSearch;
 import org.example.statify.search.spec.TeamSpec;
@@ -26,6 +28,7 @@ public class TeamServiceImpl implements TeamService {
   private final FootballApiClientImpl footballApiClient;
   private final TeamMapper teamMapper;
   private final TeamRepository teamRepository;
+  private final CountryRepository countryRepository;
 
   @Transactional
   @Override
@@ -105,6 +108,25 @@ public class TeamServiceImpl implements TeamService {
     } else {
       DBTeam dbTeam = teamRepository.findByApiId(apiId);
       return new TeamModel(dbTeam);
+    }
+  }
+
+  @Override
+  public void importAllTeams() {
+    List<DBCountry> countries = countryRepository.findAll();
+
+    for (DBCountry country : countries) {
+
+      try {
+        System.out.println("IMPORTING TEAMS FOR: " + country.getName());
+
+        importTeams(country.getName());
+
+      } catch (Exception e) {
+
+        System.err.println(
+            "ERROR IMPORTING TEAMS FOR: " + country.getName() + " -> " + e.getMessage());
+      }
     }
   }
 }

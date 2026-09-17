@@ -3,9 +3,7 @@ package org.example.statify.service.impl;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +25,7 @@ import org.example.statify.repository.*;
 import org.example.statify.search.FixtureSearch;
 import org.example.statify.search.spec.FixtureSpec;
 import org.example.statify.service.FixtureService;
+import org.example.statify.service.TeamService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +38,7 @@ public class FixtureServiceImpl implements FixtureService {
 
   private final FixtureMapper fixtureMapper;
   private final ScoreMapper scoreMapper;
+  private final TeamService teamService;
 
   private final FixtureRepository fixtureRepository;
   private final ScoreRepository scoreRepository;
@@ -59,6 +59,7 @@ public class FixtureServiceImpl implements FixtureService {
 
     final ApiFixtureSearch search =
         new ApiFixtureSearch().setLeague(leagueId).setSeason(seasonYear);
+
     final ApiResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
 
     log.info("TOTAL FIXTURES FROM API = {}", response.getResponse().size());
@@ -81,39 +82,133 @@ public class FixtureServiceImpl implements FixtureService {
   public void importAllFixtures(Integer leagueId, Integer seasonYear) {
 
     log.info(
-        "Starting fixtures import | league filter = {} | season filter = {}", leagueId, seasonYear);
+        "Starting FT fixtures import | league filter = {} | season filter = {}",
+        leagueId,
+        seasonYear);
 
     List<DBLeague> leagues = leagueRepository.findAll();
 
     for (DBLeague league : leagues) {
-
-      if (leagueId != null && !leagueId.equals(league.getApiId())) {
-        continue;
-      }
 
       if (league.getApiId() == null) {
         log.warn("League with database ID {} has no apiId. Skipping.", league.getId());
         continue;
       }
 
-      for (DBSeason season : league.getSeasons()) {
+      if (leagueId != null && !leagueId.equals(league.getApiId())) {
+        continue;
+      }
 
-        if (seasonYear != null && !seasonYear.equals(season.getYear())) {
-          continue;
-        }
+      for (DBSeason season : league.getSeasons()) {
 
         if (season.getYear() == null) {
           continue;
         }
 
-        log.info(
-            "Importing fixtures | league = {} | season = {}", league.getApiId(), season.getYear());
+        if (seasonYear != null && !seasonYear.equals(season.getYear())) {
+          continue;
+        }
 
-        importFixtures(league.getApiId(), season.getYear());
+        Integer currentLeagueId = league.getApiId();
+        Integer currentSeasonYear = season.getYear();
+
+        log.info(
+            "Importing FT fixtures | league = {} | season = {}",
+            currentLeagueId,
+            currentSeasonYear);
+
+        ApiFixtureSearch search =
+            new ApiFixtureSearch()
+                .setLeague(currentLeagueId)
+                .setSeason(currentSeasonYear)
+                .setStatus("FT");
+
+        ApiResponseModel<FixtureResponseModel> response;
+
+        try {
+
+          response = footballApiClient.getFixtures(search);
+
+        } catch (Exception e) {
+
+          log.error(
+              "FAILED to get fixtures after retries | league = {} | season = {} | error = {}",
+              currentLeagueId,
+              currentSeasonYear,
+              e.getMessage(),
+              e);
+
+          continue;
+        }
+
+        if (response == null || response.getResponse() == null) {
+
+          log.warn(
+              "No FT fixtures returned | league = {} | season = {}",
+              currentLeagueId,
+              currentSeasonYear);
+
+          continue;
+        }
+
+        log.info(
+            "FT FIXTURES FROM API = {} | league = {} | season = {}",
+            response.getResponse().size(),
+            currentLeagueId,
+            currentSeasonYear);
+
+        for (FixtureResponseModel responseModel : response.getResponse()) {
+
+          try {
+
+            saveFromApiFixture(responseModel);
+
+          } catch (Exception e) {
+
+            Integer fixtureApiId =
+                responseModel.getFixture() != null ? responseModel.getFixture().getId() : null;
+
+            log.error(
+                "FAILED to save fixture | fixture = {} | league = {} | season = {} | error = {}",
+                fixtureApiId,
+                currentLeagueId,
+                currentSeasonYear,
+                e.getMessage(),
+                e);
+          }
+        }
+
+        log.info(
+            "Finished league-season | league = {} | season = {}",
+            currentLeagueId,
+            currentSeasonYear);
       }
     }
 
-    log.info("Finished fixtures import");
+    log.info("Finished FT fixtures import");
+  }
+
+  private DBTeam getOrImportTeam(Integer teamApiId) {
+
+    DBTeam team = teamRepository.findByApiId(teamApiId);
+
+    if (team != null) {
+      return team;
+    }
+
+    log.warn("Team with API ID {} not found in database. Importing from API...", teamApiId);
+
+    teamService.saveTeamById(teamApiId);
+
+    team = teamRepository.findByApiId(teamApiId);
+
+    if (team == null) {
+      throw new NotFoundException("Team could not be imported: " + teamApiId);
+    }
+
+    log.info("Team with API ID {} successfully imported", teamApiId);
+
+    return team;
   }
 
   public FixtureModel saveFromApiFixture(FixtureResponseModel responseModel) {
@@ -129,6 +224,7 @@ public class FixtureServiceImpl implements FixtureService {
 
     DBFixture fixture = fixtureMapper.toEntity(fixtureModel);
 
+    // LEAGUE
     DBLeague league = leagueRepository.findByApiId(fixtureModel.getLeagueId());
 
     if (league == null) {
@@ -137,6 +233,7 @@ public class FixtureServiceImpl implements FixtureService {
 
     fixture.setLeague(league);
 
+    // SEASON
     DBSeason season =
         seasonRepository.findByLeagueApiIdAndYear(
             fixtureModel.getLeagueId(), fixtureModel.getSeasonYear());
@@ -151,19 +248,11 @@ public class FixtureServiceImpl implements FixtureService {
 
     fixture.setSeason(season);
 
-    DBTeam homeTeam = teamRepository.findByApiId(fixtureModel.getHomeTeamId());
-
-    if (homeTeam == null) {
-      throw new NotFoundException("Home team not found: " + fixtureModel.getHomeTeamId());
-    }
+    DBTeam homeTeam = getOrImportTeam(fixtureModel.getHomeTeamId());
 
     fixture.setHomeTeam(homeTeam);
 
-    DBTeam awayTeam = teamRepository.findByApiId(fixtureModel.getAwayTeamId());
-
-    if (awayTeam == null) {
-      throw new NotFoundException("Away team not found: " + fixtureModel.getAwayTeamId());
-    }
+    DBTeam awayTeam = getOrImportTeam(fixtureModel.getAwayTeamId());
 
     fixture.setAwayTeam(awayTeam);
 
@@ -414,83 +503,5 @@ public class FixtureServiceImpl implements FixtureService {
     fixtureRepository.saveAndFlush(fixture);
 
     log.info("Fixture API ID {} successfully saved/updated.", apiId);
-  }
-
-  @Override
-  public void calculateGgForDate(LocalDate date) {
-
-    ZoneId zoneId = ZoneId.of(schedulerZone);
-
-    OffsetDateTime from = date.atStartOfDay(zoneId).toOffsetDateTime();
-
-    OffsetDateTime to = date.plusDays(1).atStartOfDay(zoneId).toOffsetDateTime();
-
-    List<DBFixture> fixtures =
-        fixtureRepository.findByDateGreaterThanEqualAndDateLessThanAndStatusShortIn(
-            from, to, Set.of("FT", "AET", "PEN"));
-
-    System.out.println("GG CALCULATION FOR " + date + " | FIXTURES FOUND: " + fixtures.size());
-
-    for (DBFixture fixture : fixtures) {
-
-      calculateGg(fixture);
-    }
-  }
-
-  private void calculateGg(DBFixture fixture) {
-
-    DBScore firstHalf =
-        fixture.getScores().stream()
-            .filter(score -> score.getType() == ScoreType.FIRST_HALF)
-            .findFirst()
-            .orElse(null);
-
-    DBScore secondHalf =
-        fixture.getScores().stream()
-            .filter(score -> score.getType() == ScoreType.SECOND_HALF)
-            .findFirst()
-            .orElse(null);
-
-    if (firstHalf == null || secondHalf == null) {
-
-      System.out.println("GG SKIPPED - SCORES MISSING | fixtureApiId=" + fixture.getApiId());
-
-      return;
-    }
-
-    if (firstHalf.getHome() == null
-        || firstHalf.getAway() == null
-        || secondHalf.getHome() == null
-        || secondHalf.getAway() == null) {
-
-      System.out.println("GG SKIPPED - SCORE VALUES NULL | fixtureApiId=" + fixture.getApiId());
-
-      return;
-    }
-
-    boolean firstHalfGg = firstHalf.getHome() > 0 && firstHalf.getAway() > 0;
-
-    boolean secondHalfGg = secondHalf.getHome() > 0 && secondHalf.getAway() > 0;
-
-    fixture.setFirstHalfGg(firstHalfGg);
-    fixture.setSecondHalfGg(secondHalfGg);
-
-    fixtureRepository.save(fixture);
-
-    System.out.println(
-        "fixtureApiId="
-            + fixture.getApiId()
-            + " | FIRST HALF="
-            + firstHalf.getHome()
-            + ":"
-            + firstHalf.getAway()
-            + " | 1GG="
-            + firstHalfGg
-            + " | SECOND HALF="
-            + secondHalf.getHome()
-            + ":"
-            + secondHalf.getAway()
-            + " | 2GG="
-            + secondHalfGg);
   }
 }

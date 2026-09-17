@@ -20,4 +20,6 @@ public interface TeamService {
   TeamModel findById(Long id);
 
   TeamModel findByApiId(Integer apiId);
+
+  void importAllTeams();
 }

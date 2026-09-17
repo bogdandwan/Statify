@@ -1,6 +1,8 @@
 package org.example.statify.client.impl;
 
+import java.time.Duration;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.example.statify.api.*;
 import org.example.statify.api.fixture.FixtureResponseModel;
 import org.example.statify.api.league.LeagueResponseModel;
@@ -13,7 +15,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+@Slf4j
 @Service
 public class FootballApiClientImpl implements FootballApiClientService {
 
@@ -26,6 +33,10 @@ public class FootballApiClientImpl implements FootballApiClientService {
   private static final String FIXTURE_API = "/fixtures";
   private static final String PLAYERS_API = "/players";
 
+  private static final long MIN_REQUEST_INTERVAL_MS = 150;
+
+  private long lastRequestTime = 0;
+
   public FootballApiClientImpl(
       WebClient.Builder builder, @Value("${football.api.key}") String apiKey) {
     this.apiKey = apiKey;
@@ -36,6 +47,70 @@ public class FootballApiClientImpl implements FootballApiClientService {
                 configurer -> configurer.defaultCodecs().maxInMemorySize(1024 * 1024 * 10)) // 10 MB
             .defaultHeader("x-apisports-key", apiKey)
             .build();
+  }
+
+  private synchronized void waitForRateLimit() {
+
+    long now = System.currentTimeMillis();
+
+    long elapsed = now - lastRequestTime;
+
+    if (elapsed < MIN_REQUEST_INTERVAL_MS) {
+
+      long waitTime = MIN_REQUEST_INTERVAL_MS - elapsed;
+
+      try {
+        System.out.println("RATE LIMIT - WAITING: " + waitTime + " ms");
+
+        Thread.sleep(waitTime);
+
+      } catch (InterruptedException e) {
+
+        Thread.currentThread().interrupt();
+
+        throw new RuntimeException("Thread interrupted while waiting for API rate limit", e);
+      }
+    }
+
+    lastRequestTime = System.currentTimeMillis();
+  }
+
+  private <T> T get(String uri, ParameterizedTypeReference<T> responseType) {
+
+    return Mono.defer(
+            () -> {
+              waitForRateLimit();
+
+              return webClient.get().uri(uri).retrieve().bodyToMono(responseType);
+            })
+        .retryWhen(
+            Retry.backoff(5, Duration.ofSeconds(2))
+                .maxBackoff(Duration.ofSeconds(30))
+                .filter(this::isRetryableException)
+                .doBeforeRetry(
+                    retrySignal ->
+                        log.warn(
+                            "API request failed. Retrying... attempt = {} | uri = {} | error = {}",
+                            retrySignal.totalRetries() + 1,
+                            uri,
+                            retrySignal.failure().getMessage()))
+                .onRetryExhaustedThrow((retrySpec, retrySignal) -> retrySignal.failure()))
+        .block();
+  }
+
+  private boolean isRetryableException(Throwable throwable) {
+
+    if (throwable instanceof WebClientRequestException) {
+      return true;
+    }
+
+    if (throwable instanceof WebClientResponseException exception) {
+
+      return exception.getStatusCode().is5xxServerError()
+          || exception.getStatusCode().value() == 429;
+    }
+
+    return false;
   }
 
   @Override
@@ -162,10 +237,5 @@ public class FootballApiClientImpl implements FootballApiClientService {
         .retrieve()
         .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<PlayerResponseModel>>() {})
         .block();
-  }
-
-  private <T> T get(String uri, ParameterizedTypeReference<T> responseType) {
-
-    return webClient.get().uri(uri).retrieve().bodyToMono(responseType).block();
   }
 }

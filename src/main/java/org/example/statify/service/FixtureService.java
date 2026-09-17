@@ -1,6 +1,5 @@
 package org.example.statify.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.example.statify.api.fixture.FixtureResponseModel;
 import org.example.statify.model.FixtureModel;
@@ -21,8 +20,6 @@ public interface FixtureService {
   FixtureModel findByApiId(Integer apiId);
 
   void syncUpcomingFixtures();
-
-  void calculateGgForDate(LocalDate date);
 
   void importAllFixtures(Integer leagueId, Integer seasonYear);
 }

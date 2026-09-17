@@ -30,6 +30,14 @@ public class CodebookController {
     fixtureService.importAllFixtures(leagueId, seasonYear);
   }
 
+  @PostMapping("/fixtures/import-all")
+  public void importAllFixtures(
+      @RequestParam(required = false) Integer leagueId,
+      @RequestParam(required = false) Integer seasonYear) {
+
+    fixtureService.importAllFixtures(leagueId, seasonYear);
+  }
+
   @PostMapping("/leagues")
   public void importLeagues() {
     leagueService.importLeagues();
@@ -38,6 +46,11 @@ public class CodebookController {
   @PostMapping("/teams")
   public void importTeams(String country) {
     teamService.importTeams(country);
+  }
+
+  @PostMapping("/teams/all")
+  public void importAllTeams() {
+    teamService.importAllTeams();
   }
 
   @PostMapping("/venues")
