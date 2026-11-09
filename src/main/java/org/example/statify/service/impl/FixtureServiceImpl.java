@@ -209,6 +209,7 @@ public class FixtureServiceImpl implements FixtureService {
     log.info("Starting database preparation");
 
     countryService.importCountries();
+    venueService.importVenues();
     leagueService.importLeagues();
 
     log.info("Database preparation completed");
