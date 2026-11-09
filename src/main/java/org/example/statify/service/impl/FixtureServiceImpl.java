@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,14 @@ import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.FixtureMapper;
 import org.example.statify.mapper.ScoreMapper;
 import org.example.statify.model.FixtureModel;
+import org.example.statify.model.LeagueModel;
 import org.example.statify.model.ScoreModel;
+import org.example.statify.model.SeasonModel;
 import org.example.statify.repository.*;
 import org.example.statify.search.FixtureSearch;
+import org.example.statify.search.LeagueSearch;
 import org.example.statify.search.spec.FixtureSpec;
-import org.example.statify.service.FixtureService;
-import org.example.statify.service.TeamService;
+import org.example.statify.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +46,11 @@ public class FixtureServiceImpl implements FixtureService {
   private final FixtureRepository fixtureRepository;
   private final ScoreRepository scoreRepository;
 
-  private final LeagueRepository leagueRepository;
-  private final SeasonRepository seasonRepository;
-  private final VenueRepository venueRepository;
+  private final LeagueService leagueService;
+  private final SeasonService seasonService;
+  private final VenueService venueService;
   private final TeamRepository teamRepository;
+  private final CountryService countryService;
 
   @Value("${scheduler.zone}")
   private String schedulerZone;
@@ -54,11 +58,14 @@ public class FixtureServiceImpl implements FixtureService {
   @Transactional
   @Override
   public void importFixtures(Integer leagueId, Integer seasonYear) {
+    if (seasonYear != 2027) {
+      return;
+    }
 
     log.info("Importing fixtures for league {} and season {}", leagueId, seasonYear);
 
     final ApiFixtureSearch search =
-        new ApiFixtureSearch().setLeague(leagueId).setSeason(seasonYear);
+        new ApiFixtureSearch().setLeague(leagueId).setSeason(seasonYear).setStatus("NS");
 
     final ApiResponseModel<FixtureResponseModel> response = footballApiClient.getFixtures(search);
 
@@ -79,16 +86,19 @@ public class FixtureServiceImpl implements FixtureService {
   }
 
   @Override
+  @Transactional
   public void importAllFixtures(Integer leagueId, Integer seasonYear) {
+
+    prepareDatabaseForFixtureImport();
 
     log.info(
         "Starting FT fixtures import | league filter = {} | season filter = {}",
         leagueId,
         seasonYear);
 
-    List<DBLeague> leagues = leagueRepository.findAll();
+    List<LeagueModel> leagues = leagueService.findAll(new LeagueSearch().setApiId(leagueId));
 
-    for (DBLeague league : leagues) {
+    for (LeagueModel league : leagues) {
 
       if (league.getApiId() == null) {
         log.warn("League with database ID {} has no apiId. Skipping.", league.getId());
@@ -99,7 +109,13 @@ public class FixtureServiceImpl implements FixtureService {
         continue;
       }
 
-      for (DBSeason season : league.getSeasons()) {
+      final List<SeasonModel> seasonModels =
+          seasonYear == null
+              ? league.getSeasons()
+              : league.getSeasons().stream()
+                  .filter(s -> Objects.equals(s.getYear(), seasonYear))
+                  .toList();
+      for (SeasonModel season : seasonModels) {
 
         if (season.getYear() == null) {
           continue;
@@ -188,9 +204,19 @@ public class FixtureServiceImpl implements FixtureService {
     log.info("Finished FT fixtures import");
   }
 
+  @Override
+  public void prepareDatabaseForFixtureImport() {
+    log.info("Starting database preparation");
+
+    countryService.importCountries();
+    leagueService.importLeagues();
+
+    log.info("Database preparation completed");
+  }
+
   private DBTeam getOrImportTeam(Integer teamApiId) {
 
-    DBTeam team = teamRepository.findByApiId(teamApiId);
+    DBTeam team = teamService.getByApiId(teamApiId);
 
     if (team != null) {
       return team;
@@ -200,7 +226,7 @@ public class FixtureServiceImpl implements FixtureService {
 
     teamService.saveTeamById(teamApiId);
 
-    team = teamRepository.findByApiId(teamApiId);
+    team = teamService.getByApiId(teamApiId);
 
     if (team == null) {
       throw new NotFoundException("Team could not be imported: " + teamApiId);
@@ -211,69 +237,64 @@ public class FixtureServiceImpl implements FixtureService {
     return team;
   }
 
+  @Transactional
+  @Override
   public FixtureModel saveFromApiFixture(FixtureResponseModel responseModel) {
 
     FixtureModel fixtureModel = fixtureMapper.toModel(responseModel);
 
-    if (fixtureRepository.existsByApiId(fixtureModel.getApiId())) {
+    // =========================================================
+    // EXISTING FIXTURE
+    // =========================================================
+    DBFixture existingFixture = fixtureRepository.findByApiId(fixtureModel.getApiId());
 
-      log.info("Fixture with API ID {} already exists. Skipping import.", fixtureModel.getApiId());
-
-      return null;
-    }
+    // =========================================================
+    // NEW FIXTURE
+    // =========================================================
 
     DBFixture fixture = fixtureMapper.toEntity(fixtureModel);
 
     // LEAGUE
-    DBLeague league = leagueRepository.findByApiId(fixtureModel.getLeagueId());
+    LeagueModel league = leagueService.findByApiId(fixtureModel.getLeagueId());
 
-    if (league == null) {
-      throw new NotFoundException("League not found: " + fixtureModel.getLeagueId());
-    }
-
-    fixture.setLeague(league);
+    fixture.setLeague(DBLeague.withId(league));
 
     // SEASON
-    DBSeason season =
-        seasonRepository.findByLeagueApiIdAndYear(
-            fixtureModel.getLeagueId(), fixtureModel.getSeasonYear());
+    SeasonModel season = seasonService.findByLeagueAndYear(league, fixtureModel.getSeasonYear());
 
-    if (season == null) {
-      throw new NotFoundException(
-          "Season not found: league = "
-              + fixtureModel.getLeagueId()
-              + ", season = "
-              + fixtureModel.getSeasonYear());
-    }
-
-    fixture.setSeason(season);
+    fixture.setSeason(DBSeason.withId(season));
 
     DBTeam homeTeam = getOrImportTeam(fixtureModel.getHomeTeamId());
-
     fixture.setHomeTeam(homeTeam);
 
     DBTeam awayTeam = getOrImportTeam(fixtureModel.getAwayTeamId());
-
     fixture.setAwayTeam(awayTeam);
 
     if (fixtureModel.getVenue() != null && fixtureModel.getVenue().getApiId() != null) {
 
-      DBVenue venue = venueRepository.findByApiId(fixtureModel.getVenue().getApiId());
+      Integer venueApiId = fixtureModel.getVenue().getApiId();
+
+      DBVenue venue = venueService.findByApiId(venueApiId);
 
       if (venue != null) {
 
         fixture.setVenue(venue);
 
+        log.debug("Venue linked | fixture = {} | venue = {}", fixtureModel.getApiId(), venueApiId);
+
       } else {
 
         log.warn(
             "Venue with API ID {} not found. Fixture {} will be saved without venue.",
-            fixtureModel.getVenue().getApiId(),
+            venueApiId,
             fixtureModel.getApiId());
       }
     }
 
+    // SAVE NEW FIXTURE
     fixtureRepository.save(fixture);
+
+    saveScores(fixtureModel.getScore(), fixture);
 
     log.info(
         "Fixture with API ID {} successfully imported | league = {} | season = {}",
@@ -443,28 +464,14 @@ public class FixtureServiceImpl implements FixtureService {
       fixture.setExtra(fixtureResponse.getFixture().getStatus().getExtra());
     }
 
-    DBLeague league = leagueRepository.findByApiId(fixtureResponse.getLeague().getId());
+    LeagueModel league = leagueService.findByApiId(fixtureResponse.getLeague().getId());
 
-    if (league == null) {
-      throw new IllegalStateException(
-          "League not found for apiId: " + fixtureResponse.getLeague().getId());
-    }
+    fixture.setLeague(DBLeague.withId(league));
 
-    fixture.setLeague(league);
+    SeasonModel season =
+        seasonService.findByLeagueAndYear(league, fixtureResponse.getLeague().getSeason());
 
-    DBSeason season =
-        seasonRepository.findByLeague_IdAndYear(
-            league.getId(), fixtureResponse.getLeague().getSeason());
-
-    if (season == null) {
-      throw new IllegalStateException(
-          "Season not found. League: "
-              + league.getName()
-              + ", year: "
-              + fixtureResponse.getLeague().getSeason());
-    }
-
-    fixture.setSeason(season);
+    fixture.setSeason(DBSeason.withId(season));
 
     DBTeam homeTeam =
         teamRepository.findByApiId(fixtureResponse.getTeams().getHome().getId().intValue());
@@ -477,7 +484,7 @@ public class FixtureServiceImpl implements FixtureService {
     fixture.setHomeTeam(homeTeam);
 
     DBTeam awayTeam =
-        teamRepository.findByApiId(fixtureResponse.getTeams().getAway().getId().intValue());
+        teamService.getByApiId(fixtureResponse.getTeams().getAway().getId().intValue());
 
     if (awayTeam == null) {
       throw new IllegalStateException(
@@ -490,7 +497,7 @@ public class FixtureServiceImpl implements FixtureService {
         && fixtureResponse.getFixture().getVenue().getId() != null) {
 
       DBVenue venue =
-          venueRepository.findByApiId(fixtureResponse.getFixture().getVenue().getId().intValue());
+          venueService.findByApiId(fixtureResponse.getFixture().getVenue().getId().intValue());
 
       if (venue == null) {
         throw new IllegalStateException(

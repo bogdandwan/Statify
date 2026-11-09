@@ -1,7 +1,8 @@
 package org.example.statify.client.impl;
 
-import java.time.Duration;
+import java.net.URI;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.example.statify.api.*;
 import org.example.statify.api.fixture.FixtureResponseModel;
@@ -17,8 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
+import org.springframework.web.util.UriBuilder;
 
 @Slf4j
 @Service
@@ -33,7 +33,7 @@ public class FootballApiClientImpl implements FootballApiClientService {
   private static final String FIXTURE_API = "/fixtures";
   private static final String PLAYERS_API = "/players";
 
-  private static final long MIN_REQUEST_INTERVAL_MS = 150;
+  private static final long MIN_REQUEST_INTERVAL_MS = 500;
 
   private long lastRequestTime = 0;
 
@@ -60,7 +60,6 @@ public class FootballApiClientImpl implements FootballApiClientService {
       long waitTime = MIN_REQUEST_INTERVAL_MS - elapsed;
 
       try {
-        System.out.println("RATE LIMIT - WAITING: " + waitTime + " ms");
 
         Thread.sleep(waitTime);
 
@@ -75,27 +74,58 @@ public class FootballApiClientImpl implements FootballApiClientService {
     lastRequestTime = System.currentTimeMillis();
   }
 
-  private <T> T get(String uri, ParameterizedTypeReference<T> responseType) {
+  private <T> T get(
+      Function<UriBuilder, URI> uriFunction, ParameterizedTypeReference<T> responseType) {
 
-    return Mono.defer(
-            () -> {
-              waitForRateLimit();
+    int attempt = 0;
 
-              return webClient.get().uri(uri).retrieve().bodyToMono(responseType);
-            })
-        .retryWhen(
-            Retry.backoff(5, Duration.ofSeconds(2))
-                .maxBackoff(Duration.ofSeconds(30))
-                .filter(this::isRetryableException)
-                .doBeforeRetry(
-                    retrySignal ->
-                        log.warn(
-                            "API request failed. Retrying... attempt = {} | uri = {} | error = {}",
-                            retrySignal.totalRetries() + 1,
-                            uri,
-                            retrySignal.failure().getMessage()))
-                .onRetryExhaustedThrow((retrySpec, retrySignal) -> retrySignal.failure()))
-        .block();
+    while (true) {
+
+      try {
+
+        waitForRateLimit();
+
+        return webClient.get().uri(uriFunction).retrieve().bodyToMono(responseType).block();
+
+      } catch (WebClientResponseException.TooManyRequests e) {
+
+        attempt++;
+
+        String retryAfterHeader = e.getHeaders().getFirst("Retry-After");
+
+        long waitTime;
+
+        if (retryAfterHeader != null) {
+
+          try {
+
+            waitTime = Long.parseLong(retryAfterHeader) * 1000L;
+
+          } catch (NumberFormatException ex) {
+
+            waitTime = Math.min(30_000L * attempt, 120_000L);
+          }
+
+        } else {
+
+          waitTime = Math.min(30_000L * attempt, 120_000L);
+        }
+
+        log.warn(
+            "429 TOO MANY REQUESTS | attempt = {} | waiting {} seconds", attempt, waitTime / 1000);
+
+        try {
+
+          Thread.sleep(waitTime);
+
+        } catch (InterruptedException interruptedException) {
+
+          Thread.currentThread().interrupt();
+
+          throw new RuntimeException("Thread interrupted during API retry", interruptedException);
+        }
+      }
+    }
   }
 
   private boolean isRetryableException(Throwable throwable) {
@@ -115,127 +145,109 @@ public class FootballApiClientImpl implements FootballApiClientService {
 
   @Override
   public ApiResponseModel<LeagueResponseModel> getLeagues(ApiLeagueSearch search) {
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(LEAGUES_API)
-                    .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
-                    .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
-                    .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
-                    .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
-                    .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
-                    .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
-                    .queryParamIfPresent("type", Optional.ofNullable(search.getType()))
-                    .queryParamIfPresent("current", Optional.ofNullable(search.getCurrent()))
-                    .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
-                    .queryParamIfPresent("last", Optional.ofNullable(search.getLast()))
-                    .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<LeagueResponseModel>>() {})
-        .block();
+
+    return get(
+        uriBuilder ->
+            uriBuilder
+                .path(LEAGUES_API)
+                .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
+                .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
+                .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
+                .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
+                .queryParamIfPresent("type", Optional.ofNullable(search.getType()))
+                .queryParamIfPresent("current", Optional.ofNullable(search.getCurrent()))
+                .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                .queryParamIfPresent("last", Optional.ofNullable(search.getLast()))
+                .build(),
+        new ParameterizedTypeReference<ApiResponseModel<LeagueResponseModel>>() {});
   }
 
   @Override
   public ApiResponseModel<VenueResponseModel> getVenues(ApiVenueSearch search) {
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(VENUES_API)
-                    .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
-                    .queryParamIfPresent("city", Optional.ofNullable(search.getCity()))
-                    .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
-                    .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
-                    .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
-                    .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<VenueResponseModel>>() {})
-        .block();
+
+    return get(
+        uriBuilder ->
+            uriBuilder
+                .path(VENUES_API)
+                .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
+                .queryParamIfPresent("city", Optional.ofNullable(search.getCity()))
+                .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
+                .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                .build(),
+        new ParameterizedTypeReference<ApiResponseModel<VenueResponseModel>>() {});
   }
 
+  @Override
   public ApiResponseModel<CountryModel> getCountries(ApiCountrySearch search) {
 
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(COUNTRIES_API)
-                    .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
-                    .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
-                    .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
-                    .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<CountryModel>>() {})
-        .block();
+    return get(
+        uriBuilder ->
+            uriBuilder
+                .path(COUNTRIES_API)
+                .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
+                .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
+                .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                .build(),
+        new ParameterizedTypeReference<ApiResponseModel<CountryModel>>() {});
   }
 
+  @Override
   public ApiResponseModel<FixtureResponseModel> getFixtures(ApiFixtureSearch search) {
 
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(FIXTURE_API)
-                    .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
-                    .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
-                    .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
-                    .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
-                    .queryParamIfPresent("date", Optional.ofNullable(search.getDate()))
-                    .queryParamIfPresent("from", Optional.ofNullable(search.getFrom()))
-                    .queryParamIfPresent("to", Optional.ofNullable(search.getTo()))
-                    .queryParamIfPresent("status", Optional.ofNullable(search.getStatus()))
-                    .queryParamIfPresent("timezone", Optional.ofNullable(search.getTimezone()))
-                    .queryParamIfPresent("last", Optional.ofNullable(search.getLast()))
-                    .queryParamIfPresent("next", Optional.ofNullable(search.getNext()))
-                    .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<FixtureResponseModel>>() {})
-        .block();
+    return get(
+        uriBuilder ->
+            uriBuilder
+                .path(FIXTURE_API)
+                .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
+                .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
+                .queryParamIfPresent("date", Optional.ofNullable(search.getDate()))
+                .queryParamIfPresent("from", Optional.ofNullable(search.getFrom()))
+                .queryParamIfPresent("to", Optional.ofNullable(search.getTo()))
+                .queryParamIfPresent("status", Optional.ofNullable(search.getStatus()))
+                .queryParamIfPresent("timezone", Optional.ofNullable(search.getTimezone()))
+                .queryParamIfPresent("last", Optional.ofNullable(search.getLast()))
+                .queryParamIfPresent("next", Optional.ofNullable(search.getNext()))
+                .build(),
+        new ParameterizedTypeReference<ApiResponseModel<FixtureResponseModel>>() {});
   }
 
+  @Override
   public ApiResponseModel<TeamApiResponseModel> getTeamsByCountry(ApiTeamSearch search) {
 
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(TEAMS_API)
-                    .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
-                    .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
-                    .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
-                    .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
-                    .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
-                    .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
-                    .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
-                    .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<TeamApiResponseModel>>() {})
-        .block();
+    return get(
+        uriBuilder ->
+            uriBuilder
+                .path(TEAMS_API)
+                .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                .queryParamIfPresent("name", Optional.ofNullable(search.getName()))
+                .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
+                .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                .queryParamIfPresent("country", Optional.ofNullable(search.getCountry()))
+                .queryParamIfPresent("code", Optional.ofNullable(search.getCode()))
+                .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                .build(),
+        new ParameterizedTypeReference<ApiResponseModel<TeamApiResponseModel>>() {});
   }
 
+  @Override
   public ApiResponseModel<PlayerResponseModel> getPlayers(ApiPlayerSearch search) {
 
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(PLAYERS_API)
-                    .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
-                    .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
-                    .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
-                    .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
-                    .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
-                    .queryParamIfPresent("page", Optional.ofNullable(search.getPage()))
-                    .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<ApiResponseModel<PlayerResponseModel>>() {})
-        .block();
+    return get(
+        uriBuilder ->
+            uriBuilder
+                .path(PLAYERS_API)
+                .queryParamIfPresent("id", Optional.ofNullable(search.getId()))
+                .queryParamIfPresent("team", Optional.ofNullable(search.getTeam()))
+                .queryParamIfPresent("league", Optional.ofNullable(search.getLeague()))
+                .queryParamIfPresent("season", Optional.ofNullable(search.getSeason()))
+                .queryParamIfPresent("search", Optional.ofNullable(search.getFullText()))
+                .queryParamIfPresent("page", Optional.ofNullable(search.getPage()))
+                .build(),
+        new ParameterizedTypeReference<ApiResponseModel<PlayerResponseModel>>() {});
   }
 }

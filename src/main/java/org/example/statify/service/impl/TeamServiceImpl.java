@@ -112,6 +112,15 @@ public class TeamServiceImpl implements TeamService {
   }
 
   @Override
+  public DBTeam getByApiId(Integer apiId) {
+    DBTeam dbTeam = teamRepository.findByApiId(apiId);
+    if (dbTeam == null) {
+      throw new NotFoundException("Team not found by id: " + apiId);
+    }
+    return dbTeam;
+  }
+
+  @Override
   public void importAllTeams() {
     List<DBCountry> countries = countryRepository.findAll();
 

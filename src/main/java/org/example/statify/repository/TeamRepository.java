@@ -10,4 +10,5 @@ public interface TeamRepository
   DBTeam findByApiId(Integer apiId);
 
   boolean existsByApiId(Integer apiId);
+
 }

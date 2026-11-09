@@ -24,4 +24,9 @@ public class ScoreServiceImpl implements ScoreService {
 
     return dbScores.stream().map(ScoreModel::new).collect(Collectors.toList());
   }
+
+  @Override
+  public void saveScore(ScoreModel score) {
+
+  }
 }

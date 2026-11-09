@@ -1,0 +1,160 @@
+package org.example.statify.entity.enums;
+
+public enum GameType {
+
+  // KONACAN ISHOD
+  HOME_WIN, // 1
+  DRAW, // X
+  AWAY_WIN, // 2
+
+  // DUPLA SANSA
+  DOUBLE_CHANCE_1X, // 1X
+  DOUBLE_CHANCE_12, // 12
+  DOUBLE_CHANCE_X2, // X2
+
+  // DUPLA SANSA - POLUVREME
+  FIRST_HALF_DOUBLE_CHANCE_1X, // I Pol. DS 1X
+  FIRST_HALF_DOUBLE_CHANCE_X2, // I Pol. DS X2
+  FIRST_HALF_DOUBLE_CHANCE_12, // I Pol. DS 12
+  SECOND_HALF_DOUBLE_CHANCE_1X, // II Pol. DS 1X
+  SECOND_HALF_DOUBLE_CHANCE_X2, // II Pol. DS X2
+  SECOND_HALF_DOUBLE_CHANCE_12, // II Pol. DS 12
+
+  // ISHOD POLUVREMENA
+  FIRST_HALF_HOME_WIN, // I Pol. 1
+  FIRST_HALF_DRAW, // I Pol. X
+  FIRST_HALF_AWAY_WIN, // I Pol. 2
+  SECOND_HALF_HOME_WIN, // II Pol. 1
+  SECOND_HALF_DRAW, // II Pol. X
+  SECOND_HALF_AWAY_WIN, // II Pol. 2
+
+  // POLUVREME / KRAJ
+  HALF_TIME_FULL_TIME, // P/K: 1/1, 1/X, 1/2, X/1...
+  HT_FT_1_1, // 1/1
+  HT_FT_1_X, // 1/X
+  HT_FT_1_2, // 1/2
+  HT_FT_X_1, // X/1
+  HT_FT_X_X, // X/X
+  HT_FT_X_2, // X/2
+  HT_FT_2_1, // 2/1
+  HT_FT_2_X, // 2/X
+  HT_FT_2_2, // 2/2
+
+  // X NO BET
+  DRAW_NO_BET_HOME, // XNB 1
+  DRAW_NO_BET_AWAY, // XNB 2
+
+  // OBA TIMA DAJU GOL
+  BOTH_TEAMS_TO_SCORE, // GG
+  BOTH_TEAMS_NOT_TO_SCORE, // NG
+  BOTH_TEAMS_2_PLUS_GOALS, // 2GG
+  BOTH_TEAMS_NOT_2_PLUS_GOALS, // 2NG
+  BOTH_TEAMS_3_PLUS_GOALS, // 3GG
+  BOTH_TEAMS_NOT_3_PLUS_GOALS, // 3NG
+
+  // GG / NG PO POLUVREMENIMA
+  FIRST_HALF_BOTH_TEAMS_SCORE, // IGG
+  FIRST_HALF_BOTH_TEAMS_NOT_SCORE, // ING
+  SECOND_HALF_BOTH_TEAMS_SCORE, // IIGG
+  SECOND_HALF_BOTH_TEAMS_NOT_SCORE, // IING
+
+  // KOMBINACIJE GG / NG PO POLUVREMENIMA
+  ING_AND_IING, // ING&IING
+  ING_AND_IIGG, // ING&IIGG
+  IGG_AND_IING, // IGG&IING
+  IGG_AND_IIGG, // IGG&IIGG
+
+  // UKUPNO GOLOVA
+  TOTAL_GOALS_0_2, // UG 0-2
+  TOTAL_GOALS_0_3, // UG 0-3
+  TOTAL_GOALS_0_4, // UG 0-4
+  TOTAL_GOALS_3_PLUS, // UG 3+
+  TOTAL_GOALS_4_PLUS, // UG 4+
+  TOTAL_GOALS_4_6, // UG 4-6
+  TOTAL_GOALS_5_PLUS, // UG 5+
+  TOTAL_GOALS_6_PLUS, // UG 6+
+  TOTAL_GOALS_7_PLUS, // UG 7+
+
+  // KOMBINACIJE ISHODA I GOLOVA
+  HOME_WIN_AND_0_3_GOALS, // 1&0-3
+  HOME_WIN_AND_0_4_GOALS, // 1&0-4
+  HOME_WIN_AND_0_5_GOALS, // 1&0-5
+  HOME_WIN_AND_4_PLUS_GOALS, // 1&4+
+  AWAY_WIN_AND_0_2_GOALS, // 2&0-2
+  AWAY_WIN_AND_0_3_GOALS, // 2&0-3
+  AWAY_WIN_AND_0_4_GOALS, // 2&0-4
+  AWAY_WIN_AND_1_6_GOALS, // 2&1-6
+  AWAY_WIN_AND_4_PLUS_GOALS, // 2&4+
+  DRAW_AND_0_2_GOALS, // X&0-2
+  DRAW_AND_2_PLUS_GOALS, // X&2+
+  DRAW_AND_4_PLUS_GOALS, // X&4+
+
+  // KOMBINACIJE GG I UKUPNIH GOLOVA
+  GG_AND_3_PLUS, // GG&3+
+  GG_AND_4_PLUS, // GG&4+
+  GG_AND_5_PLUS, // GG&5+
+  GG_AND_6_PLUS, // GG&6+
+  TWO_GG_AND_5_PLUS, // 2GG&5+
+  TWO_GG_AND_6_PLUS, // 2GG&6+
+
+  // KOMBINACIJE ISHODA I POLUVREMENA
+  HOME_WIN_AND_FIRST_HALF_MORE_GOALS, // 1&I>II
+  DRAW_AND_FIRST_HALF_0_2, // X&I0-2
+  DRAW_AND_FIRST_HALF_GG, // X&IGG
+  DRAW_AND_FIRST_HALF_NG, // X&ING
+  DRAW_AND_SECOND_HALF_GG, // X&IIGG
+  DRAW_AND_SECOND_HALF_NG, // X&IING
+
+  // KOMBINACIJE RASPO​​NA GOLOVA PO POLUVREMENIMA
+  DRAW_AND_HALVES_0_2_0_2, // X&I0-2&II0-2
+  DRAW_AND_HALVES_0_2_1_3, // X&I0-2&II1-3
+  DRAW_AND_HALVES_1_2_1_2, // X&I1-2&II1-2
+  DRAW_AND_HALVES_1_3_1_3, // X&I1-3&II1-3
+
+  // PRVI GOL
+  FIRST_GOAL_HOME, // 1 - prvi gol daje domacin
+  FIRST_GOAL_AWAY, // 2 - prvi gol daje gost
+  NO_GOAL_IN_MATCH, // Nema golova
+  DRAW_AND_HOME_FIRST_GOAL, // X&1
+  DRAW_AND_AWAY_FIRST_GOAL, // X&2
+
+  // TACAN REZULTAT
+  CORRECT_SCORE, // Tacan rezultat: 0:0, 1:0, 1:1...
+  FIRST_HALF_CORRECT_SCORE, // Tacan rezultat prvog poluvremena
+  SECOND_HALF_CORRECT_SCORE, // Tacan rezultat drugog poluvremena
+
+  // GOLovi DOMACINA I GOSTA
+  HOME_TEAM_GOALS, // Broj golova domacina
+  AWAY_TEAM_GOALS, // Broj golova gosta
+  HOME_TEAM_3_4_GOALS, // Domacin daje 3-4 gola
+  AWAY_TEAM_3_4_GOALS, // Gost daje 3-4 gola
+
+  // HENDIKEP
+  EUROPEAN_HANDICAP, // EH: 1, X, 2 uz hendikep
+  ASIAN_HANDICAP, // AH: npr. -0.5, -1.0, +1.5
+
+  // KOMBINACIJE I SPECIJALNA TRZISTA
+  RESULT_AND_TOTAL_GOALS, // Ishod + ukupan broj golova
+  RESULT_AND_BOTH_TEAMS_SCORE, // Ishod + GG/NG
+  TEAM_TO_SCORE_IN_BOTH_HALVES, // Tim daje gol u oba poluvremena
+  TEAM_TO_WIN_BOTH_HALVES, // Tim dobija oba poluvremena
+  MOST_GOALS_IN_HALF, // Vise golova u I ili II poluvremenu
+
+  // KORNERI
+  TOTAL_CORNERS_OVER, // Ukupno kornera vise od granice
+  TOTAL_CORNERS_UNDER, // Ukupno kornera manje od granice
+  CORNER_HANDICAP, // Hendikep kornera
+  FIRST_CORNER, // Prvi korner
+  MOST_CORNERS, // Tim sa vise kornera
+
+  // KARTONI
+  TOTAL_CARDS_OVER, // Ukupno kartona vise od granice
+  TOTAL_CARDS_UNDER, // Ukupno kartona manje od granice
+  CARD_HANDICAP, // Hendikep kartona
+  FIRST_CARD, // Prvi karton
+  MOST_CARDS, // Tim sa vise kartona
+
+  // PRODUZECI I PENALI
+  EXTRA_TIME_RESULT, // Ishod produzetaka
+  PENALTY_SHOOTOUT_WINNER // Pobednik penal-serije
+}

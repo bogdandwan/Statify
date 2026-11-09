@@ -1,11 +1,11 @@
 package org.example.statify.scheduler;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.example.statify.entity.DBSeason;
-import org.example.statify.repository.SeasonRepository;
+import org.example.statify.model.SeasonModel;
 import org.example.statify.service.FixtureService;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.example.statify.service.SeasonService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,16 +13,17 @@ import org.springframework.stereotype.Component;
 public class UpcomingFixtureScheduler {
 
   private final FixtureService fixtureService;
-  private final SeasonRepository seasonRepository;
+  private final SeasonService seasonService;
 
-  @Scheduled(cron = "${scheduler.fixture.cron}")
+  // @Scheduled(fixedRate = 30 * 60 * 1000, initialDelay = 0)
+  @Transactional
   public void updateFixtures() {
 
     System.out.println("FIXTURE SCHEDULER STARTED");
 
-    List<DBSeason> currentSeasons = seasonRepository.findAllByCurrentTrue();
+    List<SeasonModel> currentSeasons = seasonService.findCurrentSeasons();
 
-    for (DBSeason season : currentSeasons) {
+    for (SeasonModel season : currentSeasons) {
 
       Integer leagueApiId = season.getLeague().getApiId();
       Integer seasonYear = season.getYear();

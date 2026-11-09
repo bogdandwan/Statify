@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.example.statify.model.SeasonModel;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "seasons")
+@Accessors(chain = true)
 public class DBSeason {
 
   @Id
@@ -36,4 +39,8 @@ public class DBSeason {
 
   /*@OneToMany(mappedBy = "season")
   private List<DBFixture> fixtures;*/
+
+  public static DBSeason withId(SeasonModel seasonModel) {
+    return new DBSeason().setId(seasonModel.getId());
+  }
 }

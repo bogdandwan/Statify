@@ -14,10 +14,10 @@ import org.example.statify.entity.exceptions.NotFoundException;
 import org.example.statify.entity.exceptions.ValidationException;
 import org.example.statify.mapper.LeagueMapper;
 import org.example.statify.model.LeagueModel;
-import org.example.statify.repository.CountryRepository;
 import org.example.statify.repository.LeagueRepository;
 import org.example.statify.search.LeagueSearch;
 import org.example.statify.search.spec.LeagueSpec;
+import org.example.statify.service.CountryService;
 import org.example.statify.service.LeagueService;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ public class LeagueServiceImpl implements LeagueService {
   private final FootballApiClientImpl footballApiClient;
   private final LeagueMapper leagueMapper;
   private final LeagueRepository leagueRepository;
-  private final CountryRepository countryRepository;
+  private final CountryService countryService;
 
   @Transactional
   public void importLeagues() {
@@ -53,7 +53,7 @@ public class LeagueServiceImpl implements LeagueService {
     DBLeague league = leagueMapper.toEntity(leagueModel);
     if (leagueModel.getCountry() != null) {
       String countryName = leagueModel.getCountry().getName();
-      DBCountry country = countryRepository.findByName(countryName);
+      DBCountry country = countryService.findByName(countryName);
 
       league.setCountry(country);
     }
@@ -108,11 +108,17 @@ public class LeagueServiceImpl implements LeagueService {
 
   @Override
   public LeagueModel findByApiId(Integer apiId) {
-
-    if (apiId == null) {
-      throw new NotFoundException("League not found.");
+    final DBLeague dbLeague = leagueRepository.findByApiId(apiId);
+    if (dbLeague == null) {
+      final LeagueResponseModel leagueResponseModel =
+          footballApiClient.getLeagues(new ApiLeagueSearch().setId(apiId)).getResponse().stream()
+              .findFirst()
+              .orElse(null);
+      if (leagueResponseModel == null) {
+        throw new ValidationException("League with api id :" + apiId + " not found");
+      }
+      return saveFromApiLeague(leagueResponseModel);
     } else {
-      DBLeague dbLeague = leagueRepository.findByApiId(apiId);
       return new LeagueModel(dbLeague);
     }
   }

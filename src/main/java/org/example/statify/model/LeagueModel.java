@@ -32,4 +32,15 @@ public class LeagueModel {
       this.seasons = dbLeague.getSeasons().stream().map(SeasonModel::new).toList();
     }
   }
+
+  public LeagueModel(DBLeague dbLeague, boolean excludeSeasons) {
+    this.id = dbLeague.getId();
+    this.apiId = dbLeague.getApiId();
+    this.name = dbLeague.getName();
+    this.type = dbLeague.getType();
+    this.logo = dbLeague.getLogo();
+    if (dbLeague.getCountry() != null) {
+      this.country = new CountryModel(dbLeague.getCountry());
+    }
+  }
 }

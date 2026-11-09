@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.example.statify.model.LeagueModel;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "leagues")
+@Accessors(chain = true)
 public class DBLeague {
 
   @Id
@@ -34,4 +37,8 @@ public class DBLeague {
 
   @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DBSeason> seasons = new ArrayList<>();
+
+  public static DBLeague withId(LeagueModel leagueModel) {
+    return new DBLeague().setId(leagueModel.getId());
+  }
 }

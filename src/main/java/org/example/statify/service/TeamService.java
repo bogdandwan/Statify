@@ -2,6 +2,7 @@ package org.example.statify.service;
 
 import java.util.List;
 import org.example.statify.api.team.TeamApiResponseModel;
+import org.example.statify.entity.DBTeam;
 import org.example.statify.model.TeamModel;
 import org.example.statify.search.TeamSearch;
 
@@ -20,6 +21,8 @@ public interface TeamService {
   TeamModel findById(Long id);
 
   TeamModel findByApiId(Integer apiId);
+
+  DBTeam getByApiId(Integer apiId);
 
   void importAllTeams();
 }

@@ -2,6 +2,7 @@ package org.example.statify.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.statify.service.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class CodebookController {
 
   @PostMapping("/country")
   public void importCountries(String name) {
-    countryService.importCountries(name);
+    countryService.importCountries();
   }
 
   @PostMapping("/fixtures")
@@ -54,12 +55,18 @@ public class CodebookController {
   }
 
   @PostMapping("/venues")
-  public void importVenue(String country) {
-    venueService.importVenues(country);
+  public void importVenue() {
+    venueService.importVenues();
   }
 
   @PostMapping("/players")
   public void importPlayers(@RequestParam Integer leagueId, @RequestParam Integer season) {
     playerService.importPlayer(leagueId, season);
+  }
+
+  @PostMapping("/check-api-venues")
+  public ResponseEntity<Void> checkApiVenues() {
+    venueService.checkApiVenues();
+    return ResponseEntity.accepted().build();
   }
 }

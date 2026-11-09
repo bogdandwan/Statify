@@ -1,5 +1,6 @@
 package org.example.statify.service;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.example.statify.api.fixture.FixtureResponseModel;
 import org.example.statify.model.FixtureModel;
@@ -17,9 +18,11 @@ public interface FixtureService {
 
   FixtureModel findById(Long id);
 
-  FixtureModel findByApiId(Integer apiId);
+  FixtureModel findByApiId(@NotNull Integer apiId);
 
   void syncUpcomingFixtures();
 
   void importAllFixtures(Integer leagueId, Integer seasonYear);
+
+  void prepareDatabaseForFixtureImport();
 }

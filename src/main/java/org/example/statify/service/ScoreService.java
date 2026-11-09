@@ -7,4 +7,6 @@ import org.example.statify.search.ScoreSearch;
 public interface ScoreService {
 
   List<ScoreModel> findAll(ScoreSearch search);
+
+  void saveScore(ScoreModel score);
 }
